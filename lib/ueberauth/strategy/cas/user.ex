@@ -3,5 +3,5 @@ defmodule Ueberauth.Strategy.CAS.User do
   Representation of a CAS user with their roles.
   """
 
-  defstruct name: nil, email: nil
+  defstruct name: nil, email: nil, roles: nil
 end

@@ -14,7 +14,7 @@ defmodule Ueberauth.Strategy.CAS.Server do
     {
       :ok, %CAS.ValidateTicketResponse{
         status_code: 200,
-        user: %CAS.User{name: "Marcel de Graaf", email: "mail@marceldegraaf.net"}
+        user: %CAS.User{name: "Marcel de Graaf", email: "mail@marceldegraaf.net", roles: ["developer", "admin"]}
       }
     }
   end

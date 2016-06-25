@@ -48,6 +48,14 @@ defmodule Ueberauth.Strategy.CAS do
     }
   end
 
+  def credentials(conn) do
+    %Credentials{
+      expires: false,
+      token: conn.private.cas_ticket,
+      other: conn.private.cas_user.roles,
+    }
+  end
+
   defp redirect_url(conn) do
     CAS.Server.login_url <> "?service=#{callback_url(conn)}"
   end
