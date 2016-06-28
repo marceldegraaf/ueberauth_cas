@@ -1,15 +1,17 @@
-defmodule Ueberauth.Strategy.CAS.Server do
+defmodule Ueberauth.Strategy.CAS.API do
   @moduledoc """
   CAS server API implementation.
   """
 
   alias Ueberauth.Strategy.CAS
 
+  @doc "Returns the URL to this CAS server's login page."
   def login_url do
     settings(:base_url) <> "/login"
   end
 
   # TODO implement this call
+  @doc "Validate a CAS Service Ticket with the CAS server."
   def validate_ticket(ticket) do
     {
       :ok, %CAS.ValidateTicketResponse{

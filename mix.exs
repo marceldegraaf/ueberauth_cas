@@ -16,7 +16,8 @@ defmodule UeberauthCAS.Mixfile do
       source_url: @url,
       homepage_url: @url,
       description: "An Ueberauth strategy for CAS authentication.",
-      deps: deps
+      deps: deps,
+      test_coverage: [tool: ExCoveralls],
     ]
   end
 
@@ -28,7 +29,12 @@ defmodule UeberauthCAS.Mixfile do
 
   defp deps do
     [
-      {:ueberauth, "~> 0.2"}
+      {:ueberauth, "~> 0.2"},
+      {:excoveralls, "~> 0.5", only: :test},
+      {:inch_ex, "~> 0.5.0", only: :docs},
+      {:earmark, "~> 0.1.0", only: :dev},
+      {:ex_doc, "~> 0.11.0", only: :dev},
+      {:mock, "~> 0.1.1", only: :test},
     ]
   end
 

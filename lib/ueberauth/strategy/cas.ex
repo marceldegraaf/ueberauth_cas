@@ -1,6 +1,23 @@
 defmodule Ueberauth.Strategy.CAS do
   @moduledoc """
-  CAS Strategy for Überauth
+  CAS Strategy for Überauth. Redirects the user to a CAS login page
+  and verifies the Service Ticket the CAS server returns after a
+  successful login.
+
+  The login flow looks like this:
+
+  1. User is redirected to the CAS server's login page by
+    `Ueberauth.Strategy.CAS.handle_request!`
+
+  2. User signs in to the CAS server.
+
+  3. CAS server redirects back to the Elixir application, sending
+    a Service Ticket in the URL parameters.
+
+  4. This Service Ticket is validated by this Überauth CAS strategy,
+    fetching the user's information at the same time.
+
+  5. User can proceed to use the Elixir application.
   """
 
   use Ueberauth.Strategy
@@ -10,8 +27,12 @@ defmodule Ueberauth.Strategy.CAS do
   alias Ueberauth.Auth.Extra
   alias Ueberauth.Strategy.CAS
 
+  @doc """
+  Ueberauth `request` handler. Redirects to the CAS server's login page
+  """
   def handle_request!(conn) do
-    redirect!(conn, redirect_url(conn))
+    conn
+    |> redirect!(redirect_url(conn))
   end
 
   def handle_callback!(%Plug.Conn{params: %{"ticket" => ticket}} = conn) do
@@ -20,7 +41,8 @@ defmodule Ueberauth.Strategy.CAS do
   end
 
   def handle_callback!(conn) do
-    conn |> set_errors!([error("missing_ticket", "No service ticket received")])
+    conn
+    |> set_errors!([error("missing_ticket", "No service ticket received")])
   end
 
   def handle_cleanup!(conn) do
@@ -57,7 +79,7 @@ defmodule Ueberauth.Strategy.CAS do
   end
 
   defp redirect_url(conn) do
-    CAS.Server.login_url <> "?service=#{callback_url(conn)}"
+    CAS.API.login_url <> "?service=#{callback_url(conn)}"
   end
 
   defp handle_ticket(conn, ticket) do
@@ -68,13 +90,11 @@ defmodule Ueberauth.Strategy.CAS do
 
   defp fetch_user(conn, ticket) do
     ticket
-    |> CAS.Server.validate_ticket
-    |> handle_response(conn)
+    |> CAS.API.validate_ticket
+    |> handle_validate_ticket_response(conn)
   end
 
-  defp handle_response({:ok, %CAS.ValidateTicketResponse{status_code: status_code, user: user}}, conn) when status_code in 200..399 do
-    IO.inspect(user)
-
+  defp handle_validate_ticket_response({:ok, %CAS.ValidateTicketResponse{status_code: status_code, user: user}}, conn) when status_code in 200..399 do
     conn
     |> put_private(:cas_user, user)
   end
