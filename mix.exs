@@ -32,8 +32,8 @@ defmodule UeberauthCAS.Mixfile do
       {:ueberauth, "~> 0.2"},
       {:excoveralls, "~> 0.5", only: :test},
       {:inch_ex, "~> 0.5.0", only: :docs},
-      {:earmark, "~> 0.1.0", only: :dev},
-      {:ex_doc, "~> 0.11.0", only: :dev},
+      {:earmark, "~> 0.2.1", only: :dev},
+      {:ex_doc, "~> 0.12.0", only: :dev},
       {:mock, "~> 0.1.1", only: :test},
     ]
   end
