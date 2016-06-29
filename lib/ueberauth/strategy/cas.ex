@@ -28,31 +28,45 @@ defmodule Ueberauth.Strategy.CAS do
   alias Ueberauth.Strategy.CAS
 
   @doc """
-  Ueberauth `request` handler. Redirects to the CAS server's login page
+  Ueberauth `request` handler. Redirects to the CAS server's login page.
   """
   def handle_request!(conn) do
     conn
     |> redirect!(redirect_url(conn))
   end
 
+  @doc """
+  Ueberauth after login callback with a valid CAS Service Ticket.
+  """
   def handle_callback!(%Plug.Conn{params: %{"ticket" => ticket}} = conn) do
     conn
     |> handle_ticket(ticket)
   end
 
+  @doc """
+  Ueberauth after login callback missing a CAS Service Ticket.
+  """
   def handle_callback!(conn) do
     conn
     |> set_errors!([error("missing_ticket", "No service ticket received")])
   end
 
+  @doc """
+  Ueberauth cleanup callback. Clears CAS session information from `conn`.
+  """
   def handle_cleanup!(conn) do
     conn
     |> put_private(:cas_ticket, nil)
     |> put_private(:cas_user, nil)
   end
 
+  @doc "Ueberauth UID callback."
   def uid(conn), do: conn.private.cas_user.email
 
+  @doc """
+  Ueberauth extra information callback. Returns all information the CAS
+  server returned about the user that authenticated.
+  """
   def extra(conn) do
     %Extra{
       raw_info: %{
@@ -61,6 +75,9 @@ defmodule Ueberauth.Strategy.CAS do
     }
   end
 
+  @doc """
+  Ueberauth user information.
+  """
   def info(conn) do
     user = conn.private.cas_user
 
@@ -70,6 +87,9 @@ defmodule Ueberauth.Strategy.CAS do
     }
   end
 
+  @doc """
+  Ueberauth credentials callback. Contains CAS Service Ticket and user roles.
+  """
   def credentials(conn) do
     %Credentials{
       expires: false,
