@@ -3,6 +3,7 @@ defmodule Ueberauth.Strategy.CAS.API do
   CAS server API implementation.
   """
 
+  use Ueberauth.Strategy
   alias Ueberauth.Strategy.CAS
 
   @doc "Returns the URL to this CAS server's login page."
@@ -10,19 +11,24 @@ defmodule Ueberauth.Strategy.CAS.API do
     settings(:base_url) <> "/login"
   end
 
-  # TODO implement this call
   @doc "Validate a CAS Service Ticket with the CAS server."
-  def validate_ticket(ticket) do
-    {
-      :ok, %CAS.ValidateTicketResponse{
-        status_code: 200,
-        user: %CAS.User{name: "Marcel de Graaf", email: "mail@marceldegraaf.net", roles: ["developer", "admin"]}
-      }
-    }
+  def validate_ticket(ticket, conn) do
+    case HTTPoison.get(validate_url, [], params: %{ticket: ticket, service: callback_url(conn)}) do
+      {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
+        {:ok, CAS.User.from_xml(body)}
+      {:ok, %HTTPoison.Response{}} ->
+        {:not_found, "no valid CAS user found"}
+      {:error, %HTTPoison.Error{reason: reason}} ->
+        {:error, reason}
+    end
   end
 
   defp validate_url do
+    settings(:base_url) <> "/serviceValidate"
+  end
 
+  defp service do
+    settings(:service)
   end
 
   defp settings(key) do

@@ -110,11 +110,21 @@ defmodule Ueberauth.Strategy.CAS do
 
   defp fetch_user(conn, ticket) do
     ticket
-    |> CAS.API.validate_ticket
+    |> CAS.API.validate_ticket(conn)
     |> handle_validate_ticket_response(conn)
   end
 
-  defp handle_validate_ticket_response({:ok, %CAS.ValidateTicketResponse{status_code: status_code, user: user}}, conn) when status_code in 200..399 do
+  defp handle_validate_ticket_response({:not_found, message}, conn) do
+    conn
+    |> set_errors!([error("user not found", message)])
+  end
+
+  defp handle_validate_ticket_response({:error, message}, conn) do
+    conn
+    |> set_errors!([error("error", message)])
+  end
+
+  defp handle_validate_ticket_response({:ok, %CAS.User{} = user}, conn) do
     conn
     |> put_private(:cas_user, user)
   end
