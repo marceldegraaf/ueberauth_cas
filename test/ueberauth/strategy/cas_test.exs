@@ -1,5 +1,6 @@
 defmodule Ueberauth.Strategy.CAS.Test do
   use ExUnit.Case
+  use Plug.Test
 
   alias Ueberauth.Strategy.CAS
 
@@ -12,6 +13,12 @@ defmodule Ueberauth.Strategy.CAS.Test do
     }
 
     {:ok, conn: conn}
+  end
+
+  test "redirect callback redirects to login url" do
+    conn = conn(:get, "/login") |> CAS.handle_request!
+
+    assert conn.status == 302
   end
 
   test "login callback without service ticket shows an error" do
