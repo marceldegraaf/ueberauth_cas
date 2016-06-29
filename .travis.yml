@@ -1,0 +1,19 @@
+language: elixir
+
+elixir:
+  - 1.3.0
+
+otp_release:
+  - 18.3
+
+env:
+  - MIX_ENV=test
+
+before_script:
+  - mix local.rebar --force
+
+script: mix coveralls.travis
+
+after_script:
+  - mix deps.get --only docs
+  - MIX_ENV=docs mix inch.report
