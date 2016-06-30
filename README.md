@@ -7,16 +7,16 @@
 
 Central Authentication Service strategy for Überauth.
 
-**NOTE**: this library is under heavy development and should be considered
-unstable as long as this notice is in place.
-
 ## Installation
 
-  1. Add `ueberauth_cas` to your list of dependencies in `mix.exs`:
+  1. Add `ueberauth` and `ueberauth_cas` to your list of dependencies in `mix.exs`:
 
     ```elixir
     def deps do
-      [{:ueberauth_cas, "~> 0.1.0"}]
+      [
+        {:ueberauth, "~> 0.2"},
+        {:ueberauth_cas, "~> 0.1.0"},
+      ]
     end
     ```
 
@@ -25,5 +25,24 @@ unstable as long as this notice is in place.
     ```elixir
     def application do
       [applications: [:ueberauth_cas]]
+    end
+    ```
+
+  3. Configure the CAS integration in `config/config.exs`:
+
+    ```elixir
+    config :ueberauth, Ueberauth,
+      providers: [cas: {Ueberauth.Strategy.CAS, [
+        base_url: "http://cas.example.com",
+        callback: "http://your-app.example.com/auth/cas/callback",
+      ]}]
+    ```
+
+  4. In `AuthController` use the CAS strategy in your `login/4` function:
+
+    ```elixir
+    def login(conn, _params, _current_user, _claims) do
+      conn
+      |> Ueberauth.Strategy.CAS.handle_request!
     end
     ```
