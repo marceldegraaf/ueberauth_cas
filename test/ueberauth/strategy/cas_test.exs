@@ -1,7 +1,7 @@
 defmodule Ueberauth.Strategy.CAS.Test do
   use ExUnit.Case
   use Plug.Test
-  # import Mock
+  import Mock
 
   alias Ueberauth.Strategy.CAS
 
@@ -13,7 +13,37 @@ defmodule Ueberauth.Strategy.CAS.Test do
       }
     }
 
-    {:ok, conn: conn}
+    ok_xml = """
+    <cas:serviceResponse xmlns:cas="http://www.yale.edu/tp/cas">
+      <cas:authenticationSuccess>
+        <cas:user>Mail@marceldegraaf.net</cas:user>
+        <cas:attributes>
+          <cas:authenticationDate>2016-06-29T21:53:41Z</cas:authenticationDate>
+          <cas:longTermAuthenticationRequestTokenUsed>false</cas:longTermAuthenticationRequestTokenUsed>
+          <cas:isFromNewLogin>true</cas:isFromNewLogin>
+          <cas:roles>
+            <![CDATA[---
+    - developer
+    - admin
+    ]]>
+          </cas:roles>
+        </cas:attributes>
+      </cas:authenticationSuccess>
+    </cas:serviceResponse>
+    """
+
+    error_xml = """
+    <cas:serviceResponse xmlns:cas="http://www.yale.edu/tp/cas">
+      <cas:authenticationFailure code="INVALID_TICKET">Ticket 'ST-XXXXX' already consumed</cas:authenticationFailure>
+    </cas:serviceResponse>
+    """
+
+    {
+      :ok,
+      conn: conn,
+      ok_xml: ok_xml,
+      error_xml: error_xml,
+    }
   end
 
   test "redirect callback redirects to login url" do
@@ -27,14 +57,31 @@ defmodule Ueberauth.Strategy.CAS.Test do
     assert Map.has_key?(conn.assigns, :ueberauth_failure)
   end
 
-  # test "login callback with a service ticket validates the ticket" do
-  #   with_mock HTTPoison, [get: fn(_url) -> "foo" end] do
-  #     conn = CAS.handle_callback!(%Plug.Conn{params: %{"ticket" => "ST-XXXXX"}})
+  test "successful login callback validates the ticket", %{ok_xml: xml} do
+    with_mock HTTPoison, [
+      get: fn(_url, _opts, _params) ->
+        {:ok, %HTTPoison.Response{status_code: 200, body: xml, headers: []}
+      } end
+    ] do
+      conn = CAS.handle_callback!(%Plug.Conn{params: %{"ticket" => "ST-XXXXX"}})
 
-  #     assert conn.private.cas_ticket == "ST-XXXXX"
-  #     assert conn.private.cas_user != nil
-  #   end
-  # end
+      assert conn.private.cas_ticket == "ST-XXXXX"
+      assert conn.private.cas_user.email == "mail@marceldegraaf.net"
+      assert conn.private.cas_user.name == "mail@marceldegraaf.net"
+    end
+  end
+
+  test "invalid login callback returns an error", %{error_xml: xml} do
+    with_mock HTTPoison, [
+      get: fn(_url, _opts, _params) ->
+        {:ok, %HTTPoison.Response{status_code: 200, body: xml, headers: []}
+      } end
+    ] do
+      conn = CAS.handle_callback!(%Plug.Conn{params: %{"ticket" => "ST-XXXXX"}})
+
+      assert List.first(conn.assigns.ueberauth_failure.errors).message == "INVALID_TICKET"
+    end
+  end
 
   test "cleanup callback", %{conn: conn} do
     conn = CAS.handle_cleanup!(conn)

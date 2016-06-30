@@ -21,8 +21,6 @@ defmodule Ueberauth.Strategy.CAS.API do
           true ->
             {:ok, CAS.User.from_xml(body)}
         end
-      {:ok, %HTTPoison.Response{status_code: 404}} ->
-        {:not_found, "no valid CAS user found"}
       {:error, %HTTPoison.Error{reason: reason}} ->
         {:error, reason}
     end

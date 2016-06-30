@@ -114,11 +114,6 @@ defmodule Ueberauth.Strategy.CAS do
     |> handle_validate_ticket_response(conn)
   end
 
-  defp handle_validate_ticket_response({:not_found, message}, conn) do
-    conn
-    |> set_errors!([error("user not found", message)])
-  end
-
   defp handle_validate_ticket_response({:error, message}, conn) do
     conn
     |> set_errors!([error("error", message)])

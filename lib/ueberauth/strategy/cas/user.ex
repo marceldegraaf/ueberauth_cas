@@ -20,10 +20,10 @@ defmodule Ueberauth.Strategy.CAS.User do
 
   defp email(body) do
     Floki.find(body, "cas:user")
-    |> hd
+    |> List.first
     |> Tuple.to_list
     |> List.last
-    |> hd
+    |> List.first
     |> String.downcase
   end
 end
