@@ -15,20 +15,28 @@ defmodule Ueberauth.Strategy.CAS.API do
   def validate_ticket(ticket, conn) do
     case HTTPoison.get(validate_url, [], params: %{ticket: ticket, service: callback_url(conn)}) do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
-        {:ok, CAS.User.from_xml(body)}
-      {:ok, %HTTPoison.Response{}} ->
+        cond do
+          String.match?(body, ~r/cas:authenticationFailure/) ->
+            {:error, error_from_body(body)}
+          true ->
+            {:ok, CAS.User.from_xml(body)}
+        end
+      {:ok, %HTTPoison.Response{status_code: 404}} ->
         {:not_found, "no valid CAS user found"}
       {:error, %HTTPoison.Error{reason: reason}} ->
         {:error, reason}
     end
   end
 
-  defp validate_url do
-    settings(:base_url) <> "/serviceValidate"
+  defp error_from_body(body) do
+    case Regex.named_captures(~r/code="(?<code>\w+)"/, body) do
+      %{"code" => code} -> code
+                      _ -> "UNKNOWN_ERROR"
+    end
   end
 
-  defp service do
-    settings(:service)
+  defp validate_url do
+    settings(:base_url) <> "/serviceValidate"
   end
 
   defp settings(key) do
