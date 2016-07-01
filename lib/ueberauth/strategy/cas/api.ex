@@ -13,23 +13,25 @@ defmodule Ueberauth.Strategy.CAS.API do
 
   @doc "Validate a CAS Service Ticket with the CAS server."
   def validate_ticket(ticket, conn) do
-    case HTTPoison.get(validate_url, [], params: %{ticket: ticket, service: callback_url(conn)}) do
-      {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
-        cond do
-          String.match?(body, ~r/cas:authenticationFailure/) ->
-            {:error, error_from_body(body)}
-          true ->
-            {:ok, CAS.User.from_xml(body)}
-        end
-      {:error, %HTTPoison.Error{reason: reason}} ->
-        {:error, reason}
+    HTTPoison.get(validate_url, [], params: %{ticket: ticket, service: callback_url(conn)})
+    |> handle_validate_ticket_response
+  end
+
+  defp handle_validate_ticket_response({:ok, %HTTPoison.Response{status_code: 200, body: body}}) do
+    case String.match?(body, ~r/cas:authenticationFailure/) do
+      true -> {:error, error_from_body(body)}
+      _    -> {:ok, CAS.User.from_xml(body)}
     end
+  end
+
+  defp handle_validate_ticket_response({:error, %HTTPoison.Error{reason: reason}}) do
+    {:error, reason}
   end
 
   defp error_from_body(body) do
     case Regex.named_captures(~r/code="(?<code>\w+)"/, body) do
       %{"code" => code} -> code
-                      _ -> "UNKNOWN_ERROR"
+      _                 -> "UNKNOWN_ERROR"
     end
   end
 
