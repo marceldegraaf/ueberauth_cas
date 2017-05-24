@@ -13,8 +13,8 @@ defmodule Ueberauth.Strategy.CAS.API do
 
   @doc "Validate a CAS Service Ticket with the CAS server."
   def validate_ticket(ticket, conn) do
-    HTTPoison.get(validate_url, [], params: %{ticket: ticket, service: callback_url(conn)})
-    |> handle_validate_ticket_response
+    HTTPoison.get(validate_url(), [], params: %{ticket: ticket, service: callback_url(conn)})
+    |> handle_validate_ticket_response()
   end
 
   defp handle_validate_ticket_response({:ok, %HTTPoison.Response{status_code: 200, body: body}}) do

@@ -19,7 +19,7 @@ defmodule Ueberauth.Strategy.CAS.User do
   defp set_roles(user, _body), do: %User{user | roles: ["developer", "admin"]}
 
   defp email(body) do
-    Floki.find(body, "cas:user")
+    Floki.find(body, "cas|user")
     |> List.first
     |> Tuple.to_list
     |> List.last
