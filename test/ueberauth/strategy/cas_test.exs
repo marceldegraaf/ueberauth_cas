@@ -42,7 +42,7 @@ defmodule Ueberauth.Strategy.CAS.Test do
       :ok,
       conn: conn,
       ok_xml: ok_xml,
-      error_xml: error_xml,
+      error_xml: error_xml
     }
   end
 

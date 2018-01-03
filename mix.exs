@@ -23,7 +23,7 @@ defmodule UeberauthCAS.Mixfile do
 
   def application do
     [
-      applications: [:logger, :ueberauth, :httpoison]
+      applications: [:logger, :ueberauth, :httpoison, :yaml_elixir]
     ]
   end
 
@@ -31,7 +31,8 @@ defmodule UeberauthCAS.Mixfile do
     [
       {:ueberauth, "~> 0.2"},
       {:httpoison, "~> 0.11"},
-      {:floki, "~> 0.17"},
+      {:sweet_xml, "~> 0.6.5"},
+      {:yaml_elixir, "~> 1.3.1"},
       {:excoveralls, "~> 0.5", only: :test},
       {:inch_ex, "~> 0.5.0", only: :docs},
       {:earmark, "~> 1.2", only: :dev},

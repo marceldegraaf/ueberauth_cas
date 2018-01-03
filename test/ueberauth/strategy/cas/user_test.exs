@@ -12,10 +12,13 @@ defmodule Ueberauth.Strategy.CAS.User.Test do
           <cas:authenticationDate>2016-06-29T21:53:41Z</cas:authenticationDate>
           <cas:longTermAuthenticationRequestTokenUsed>false</cas:longTermAuthenticationRequestTokenUsed>
           <cas:isFromNewLogin>true</cas:isFromNewLogin>
+          <cas:secondaryEmail>AnotherMail@marceldegraaf.net</cas:secondaryEmail>
+          <cas:fullname>John Doe</cas:fullname>
           <cas:roles>
             <![CDATA[---
     - developer
     - admin
+    - author
     ]]>
           </cas:roles>
         </cas:attributes>
@@ -29,8 +32,10 @@ defmodule Ueberauth.Strategy.CAS.User.Test do
   test "generates user from xml", %{xml: xml} do
     user = User.from_xml(xml)
 
+    assert user.name == "mail@marceldegraaf.net"
     assert user.email == "mail@marceldegraaf.net"
-    assert user.roles == ["developer", "admin"]
-    assert user.name == user.email
+    assert user.roles == ["developer", "admin", "author"]
+    assert user.attributes["fullname"] == "John Doe"
+    assert user.attributes["secondary_email"] == "AnotherMail@marceldegraaf.net"
   end
 end
