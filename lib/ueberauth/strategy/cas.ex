@@ -61,16 +61,20 @@ defmodule Ueberauth.Strategy.CAS do
   end
 
   @doc "Ueberauth UID callback."
-  def uid(conn), do: conn.private.cas_user.email
+  def uid(conn) do
+    conn.private.cas_user.user
+  end
 
   @doc """
   Ueberauth extra information callback. Returns all information the CAS
   server returned about the user that authenticated.
   """
   def extra(conn) do
+    user = conn.private.cas_user
+
     %Extra{
       raw_info: %{
-        user: conn.private.cas_user
+        jwt: user.jwt
       }
     }
   end
@@ -82,8 +86,7 @@ defmodule Ueberauth.Strategy.CAS do
     user = conn.private.cas_user
 
     %Info{
-      name: user.name,
-      email: user.email
+      email: user.user
     }
   end
 
@@ -94,12 +97,12 @@ defmodule Ueberauth.Strategy.CAS do
     %Credentials{
       expires: false,
       token: conn.private.cas_ticket,
-      other: conn.private.cas_user.roles,
+      scopes: get_in(conn.private.cas_user.jwt, :roles)
     }
   end
 
   defp redirect_url(conn) do
-    CAS.API.login_url <> "?service=#{callback_url(conn)}"
+    CAS.API.login_url() <> "?service=#{callback_url(conn)}"
   end
 
   defp handle_ticket(conn, ticket) do
@@ -123,5 +126,4 @@ defmodule Ueberauth.Strategy.CAS do
     conn
     |> put_private(:cas_user, user)
   end
-
 end

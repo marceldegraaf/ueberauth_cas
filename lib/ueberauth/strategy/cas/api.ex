@@ -11,6 +11,11 @@ defmodule Ueberauth.Strategy.CAS.API do
     settings(:base_url) <> "/login"
   end
 
+  @doc "Returns the public key used to verify JWT tokens."
+  def jwt_public_key do
+    settings(:jwt_public_key)
+  end
+
   @doc "Validate a CAS Service Ticket with the CAS server."
   def validate_ticket(ticket, conn) do
     HTTPoison.get(validate_url(), [], params: %{ticket: ticket, service: callback_url(conn)})
@@ -20,7 +25,7 @@ defmodule Ueberauth.Strategy.CAS.API do
   defp handle_validate_ticket_response({:ok, %HTTPoison.Response{status_code: 200, body: body}}) do
     case String.match?(body, ~r/cas:authenticationFailure/) do
       true -> {:error, error_from_body(body)}
-      _    -> {:ok, CAS.User.from_xml(body)}
+      _ -> {:ok, CAS.User.from_xml(body)}
     end
   end
 
@@ -31,7 +36,7 @@ defmodule Ueberauth.Strategy.CAS.API do
   defp error_from_body(body) do
     case Regex.named_captures(~r/code="(?<code>\w+)"/, body) do
       %{"code" => code} -> code
-      _                 -> "UNKNOWN_ERROR"
+      _ -> "UNKNOWN_ERROR"
     end
   end
 
