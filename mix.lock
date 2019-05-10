@@ -23,6 +23,7 @@
   "mochiweb": {:hex, :mochiweb, "2.15.0", "e1daac474df07651e5d17cc1e642c4069c7850dc4508d3db7263a0651330aacc", [:rebar3], []},
   "mochiweb_html": {:hex, :mochiweb_html, "2.15.0", "d7402e967d7f9f2912f8befa813c37be62d5eeeddbbcb6fe986c44e01460d497", [:rebar3], []},
   "mock": {:hex, :mock, "0.2.1", "bfdba786903e77f9c18772dee472d020ceb8ef000783e737725a4c8f54ad28ec", [:mix], [{:meck, "~> 0.8.2", [hex: :meck, optional: false]}]},
+  "mox": {:hex, :mox, "0.5.0", "c519b48407017a85f03407a9a4c4ceb7cc6dec5fe886b2241869fb2f08476f9e", [:mix], [], "hexpm"},
   "plug": {:hex, :plug, "1.8.0", "9d2685cb007fe5e28ed9ac27af2815bc262b7817a00929ac10f56f169f43b977", [:mix], [{:mime, "~> 1.0", [hex: :mime, repo: "hexpm", optional: false]}, {:plug_crypto, "~> 1.0", [hex: :plug_crypto, repo: "hexpm", optional: false]}, {:telemetry, "~> 0.4", [hex: :telemetry, repo: "hexpm", optional: true]}], "hexpm"},
   "plug_crypto": {:hex, :plug_crypto, "1.0.0", "18e49317d3fa343f24620ed22795ec29d4a5e602d52d1513ccea0b07d8ea7d4d", [:mix], [], "hexpm"},
   "poison": {:hex, :poison, "4.0.1", "bcb755a16fac91cad79bfe9fc3585bb07b9331e50cfe3420a24bcc2d735709ae", [:mix], [], "hexpm"},

@@ -73,9 +73,7 @@ defmodule Ueberauth.Strategy.CAS do
     user = conn.private.cas_user
 
     %Extra{
-      raw_info: %{
-        jwt: user.jwt
-      }
+      raw_info: %{}
     }
   end
 
@@ -97,7 +95,7 @@ defmodule Ueberauth.Strategy.CAS do
     %Credentials{
       expires: false,
       token: conn.private.cas_ticket,
-      scopes: get_in(conn.private.cas_user.jwt, :roles)
+      scopes: get_in(conn.private.cas_user.jwt, [:roles])
     }
   end
 

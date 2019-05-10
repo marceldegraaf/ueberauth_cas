@@ -11,7 +11,7 @@ defmodule Ueberauth.Strategy.CAS.User do
   """
 
   alias Ueberauth.JWT.JwtAuthToken
-  alias Ueberauth.Strategy.CAS
+  require Logger
 
   defstruct user: nil,
             authentication_date: nil,
@@ -30,7 +30,6 @@ defmodule Ueberauth.Strategy.CAS.User do
     |> set_is_from_new_login(body)
     |> set_sso_user_id(body)
     |> set_jwt(body)
-    |> IO.inspect()
   end
 
   defp set_user(user, body) do
@@ -54,9 +53,14 @@ defmodule Ueberauth.Strategy.CAS.User do
   end
 
   defp set_jwt(user, body) do
-    case JwtAuthToken.decode(jwt(body), CAS.API.jwt_public_key()) do
-      {:success, jwt} -> Map.merge(user, %{jwt: jwt, jwt_valid: true})
-      _ -> Map.merge(user, %{jwt: nil, jwt_valid: false})
+    case JwtAuthToken.verify_and_validate(jwt(body)) do
+      {:ok, jwt} ->
+        Logger.info("JWT ok")
+        Map.merge(user, %{jwt: jwt, jwt_valid: true})
+
+      {:error, reason} ->
+        Logger.info("JWT token verify failed, reason: #{inspect(reason)}")
+        Map.merge(user, %{jwt: nil, jwt_valid: false})
     end
   end
 

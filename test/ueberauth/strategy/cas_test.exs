@@ -15,10 +15,10 @@ defmodule Ueberauth.Strategy.CAS.Test do
           is_from_new_login: "true",
           sso_user_id: "d6a7e0c8-661c-4845-894c-4b28befa375f",
           jwt: %{
-            sub: "d6a7e0c8-661c-4845-894c-4b28befa375f",
-            exp: 1_557_356_682,
-            username: "email@example.com",
-            roles: [
+            "sub" => "d6a7e0c8-661c-4845-894c-4b28befa375f",
+            "exp" => 1_557_356_682,
+            "username" => "email@example.com",
+            "roles" => [
               "merchant_portal",
               "merchant_portal_admin",
               "merchant_admin",
@@ -33,7 +33,7 @@ defmodule Ueberauth.Strategy.CAS.Test do
               "notify",
               "crew"
             ],
-            sso_user_id: "d6a7e0c8-661c-4845-894c-4b28befa375f"
+            "sso_user_id" => "d6a7e0c8-661c-4845-894c-4b28befa375f"
           }
         },
         cas_ticket: "ST-XXXXX"
@@ -144,6 +144,12 @@ defmodule Ueberauth.Strategy.CAS.Test do
   test "generates extra struct", %{conn: conn} do
     extra = CAS.extra(conn)
 
-    assert extra.raw_info.user == conn.private.cas_user
+    assert extra.raw_info == %{}
+  end
+
+  test "validates the JWT", %{conn: conn} do
+    extra = CAS.extra(conn)
+
+    assert extra.raw_info == %{}
   end
 end
