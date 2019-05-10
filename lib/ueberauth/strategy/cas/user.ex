@@ -88,6 +88,7 @@ defmodule Ueberauth.Strategy.CAS.User do
     |> Tuple.to_list()
     |> List.last()
     |> List.first()
+    |> String.to_existing_atom()
   end
 
   defp is_from_new_login(body) do
@@ -96,6 +97,7 @@ defmodule Ueberauth.Strategy.CAS.User do
     |> Tuple.to_list()
     |> List.last()
     |> List.first()
+    |> String.to_existing_atom()
   end
 
   defp sso_user_id(body) do

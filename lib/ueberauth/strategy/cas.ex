@@ -18,6 +18,32 @@ defmodule Ueberauth.Strategy.CAS do
     fetching the user's information at the same time.
 
   5. User can proceed to use the Elixir application.
+
+     The application should have a downstream plug that evaluates the plug[:ueberauth_auth]
+     variable that will contain a Ueberauth.Auth.Credentials structure if authentication passed,
+     and that structure will look like this example:
+
+      %{
+        token:   "ST-XXXXX",                  # The CAS Service Token
+        refresh_token: nil,
+        token_type: "cas",
+        secret: nil,
+        expires: nil,
+        expires_at: nil,
+        scopes: ['crew', 'ltp'],              # List of the roles/permissions granted taken from the JWT payload
+        other: %{
+          jwt: %{                             # The decoded JWT
+                "sub" => "d6a7e0c8-661c-4845-894c-4b28befa375f",
+                "exp" => 1557356682,
+                "username" => "email@example.com",
+                "roles" => [
+                  "crew",
+                  "ltp"
+                ],
+                "sso_user_id" => "d6a7e0c8-661c-4845-894c-4b28befa375f"
+              }
+        }
+
   """
 
   use Ueberauth.Strategy
@@ -70,8 +96,6 @@ defmodule Ueberauth.Strategy.CAS do
   server returned about the user that authenticated.
   """
   def extra(conn) do
-    user = conn.private.cas_user
-
     %Extra{
       raw_info: %{}
     }
@@ -93,9 +117,12 @@ defmodule Ueberauth.Strategy.CAS do
   """
   def credentials(conn) do
     %Credentials{
-      expires: false,
       token: conn.private.cas_ticket,
-      scopes: get_in(conn.private.cas_user.jwt, [:roles])
+      secret: nil,
+      expires: nil,
+      expires_at: nil,
+      scopes: get_in(conn.private.cas_user.jwt, ["roles"]),
+      other: %{jwt: conn.private.cas_user.jwt}
     }
   end
 

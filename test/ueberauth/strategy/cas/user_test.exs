@@ -43,8 +43,8 @@ defmodule Ueberauth.Strategy.CAS.User.Test do
 
     assert user.user == "email@example.com"
     assert user.authentication_date == "2019-05-08T22:49:42Z"
-    assert user.is_from_new_login == "true"
-    assert user.long_term_authentication_request_token_used == "false"
+    assert user.is_from_new_login == true
+    assert user.long_term_authentication_request_token_used == false
     assert user.sso_user_id == "d6a7e0c8-661c-4845-894c-4b28befa375f"
   end
 

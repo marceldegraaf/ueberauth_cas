@@ -11,8 +11,8 @@ defmodule Ueberauth.Strategy.CAS.Test do
         cas_user: %CAS.User{
           user: "email@example.com",
           authentication_date: "2019-05-08T22:49:42Z",
-          long_term_authentication_request_token_used: "false",
-          is_from_new_login: "true",
+          long_term_authentication_request_token_used: false,
+          is_from_new_login: true,
           sso_user_id: "d6a7e0c8-661c-4845-894c-4b28befa375f",
           jwt: %{
             "sub" => "d6a7e0c8-661c-4845-894c-4b28befa375f",
@@ -96,10 +96,12 @@ defmodule Ueberauth.Strategy.CAS.Test do
       get: fn _url, _opts, _params ->
         {:ok, %HTTPoison.Response{status_code: 200, body: xml, headers: []}}
       end do
-      conn = CAS.handle_callback!(%Plug.Conn{params: %{"ticket" => "ST-XXXXX"}})
-
-      assert conn.private.cas_ticket == "ST-XXXXX"
-      assert conn.private.cas_user.user == "email@example.com"
+      with_mock Joken.CurrentTime.OS,
+        current_time: fn -> 1_557_356_682 - 60 * 60 end do
+        conn = CAS.handle_callback!(%Plug.Conn{params: %{"ticket" => "ST-XXXXX"}})
+        assert conn.private.cas_ticket == "ST-XXXXX"
+        assert conn.private.cas_user.user == "email@example.com"
+      end
     end
   end
 
@@ -121,7 +123,7 @@ defmodule Ueberauth.Strategy.CAS.Test do
     assert conn.private.cas_ticket == nil
   end
 
-  test "use user email as uniqe uid", %{conn: conn} do
+  test "use user email as unique uid", %{conn: conn} do
     uid = CAS.uid(conn)
 
     assert uid == "email@example.com"
@@ -136,18 +138,51 @@ defmodule Ueberauth.Strategy.CAS.Test do
   test "generates credentials struct", %{conn: conn} do
     credentials = CAS.credentials(conn)
 
-    assert credentials.expires == false
     assert credentials.token == "ST-XXXXX"
-    # assert credentials.other == ["developer"]
+    assert credentials.secret == nil
+    assert credentials.expires == nil
+    assert credentials.expires_at == nil
+
+    assert credentials.scopes == [
+             "merchant_portal",
+             "merchant_portal_admin",
+             "merchant_admin",
+             "configuration",
+             "paymarkd",
+             "shopper_science",
+             "ltp",
+             "campaign_track",
+             "responsys_file_processor",
+             "emr",
+             "transactions",
+             "notify",
+             "crew"
+           ]
+
+    assert %{
+             "sub" => "d6a7e0c8-661c-4845-894c-4b28befa375f",
+             "exp" => 1_557_356_682,
+             "username" => "email@example.com",
+             "roles" => [
+               "merchant_portal",
+               "merchant_portal_admin",
+               "merchant_admin",
+               "configuration",
+               "paymarkd",
+               "shopper_science",
+               "ltp",
+               "campaign_track",
+               "responsys_file_processor",
+               "emr",
+               "transactions",
+               "notify",
+               "crew"
+             ],
+             "sso_user_id" => "d6a7e0c8-661c-4845-894c-4b28befa375f"
+           } == credentials.other[:jwt]
   end
 
   test "generates extra struct", %{conn: conn} do
-    extra = CAS.extra(conn)
-
-    assert extra.raw_info == %{}
-  end
-
-  test "validates the JWT", %{conn: conn} do
     extra = CAS.extra(conn)
 
     assert extra.raw_info == %{}

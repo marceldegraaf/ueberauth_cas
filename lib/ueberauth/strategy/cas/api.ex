@@ -25,12 +25,21 @@ defmodule Ueberauth.Strategy.CAS.API do
   defp handle_validate_ticket_response({:ok, %HTTPoison.Response{status_code: 200, body: body}}) do
     case String.match?(body, ~r/cas:authenticationFailure/) do
       true -> {:error, error_from_body(body)}
-      _ -> {:ok, CAS.User.from_xml(body)}
+      _ -> validate_user(body)
     end
   end
 
   defp handle_validate_ticket_response({:error, %HTTPoison.Error{reason: reason}}) do
     {:error, reason}
+  end
+
+  defp validate_user(body) do
+    user = CAS.User.from_xml(body)
+
+    case user.jwt_valid do
+      true -> {:ok, user}
+      false -> {:error, "JWT validation failed"}
+    end
   end
 
   defp error_from_body(body) do
