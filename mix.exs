@@ -1,21 +1,21 @@
 defmodule UeberauthCAS.Mixfile do
   use Mix.Project
 
-  @version "1.1.0"
-  @url "https://github.com/marceldegraaf/ueberauth_cas"
+  @version "0.0.1"
+  @url "https://github.comLoyaltyNZ/ueberauth_cas_jwt"
 
   def project do
     [
-      app: :ueberauth_cas,
+      app: :ueberauth_cas_jwt,
       version: @version,
       elixir: "~> 1.2",
-      name: "Ueberauth CAS strategy",
+      name: "Ueberauth CAS plus JWT strategy",
       package: package(),
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
       source_url: @url,
       homepage_url: @url,
-      description: "An Ueberauth strategy for CAS authentication.",
+      description: "An Ueberauth strategy for CAS plus JWT authentication.",
       deps: deps(),
       test_coverage: [tool: ExCoveralls]
     ]
@@ -45,7 +45,7 @@ defmodule UeberauthCAS.Mixfile do
   defp package do
     [
       files: ["lib", "mix.exs", "README.md", "LICENSE.md"],
-      maintainers: ["Marcel de Graaf"],
+      maintainers: ["Dave Oram"],
       licenses: ["MIT"],
       links: %{GitHub: @url}
     ]

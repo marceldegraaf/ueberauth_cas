@@ -11,7 +11,7 @@ config :ueberauth, Ueberauth,
     }
   ]
 
-# Put the console_sso PUBLIC key here
+# Put the PUBLIC key that is used to sign JWTs here
 config :joken,
   rs512: [
     signer_alg: "RS512",

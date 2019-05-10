@@ -1,32 +1,32 @@
-# Überauth CAS Strategy
+# Überauth CAS + JWT Strategy
 
-[![Build](https://travis-ci.org/LoyaltyNZ/ueberauth_cas.svg?branch=master)](https://travis-ci.org/LoyaltyNZ/ueberauth_cas)
-[![Coverage](https://coveralls.io/repos/github/LoyaltyNZ/ueberauth_cas/badge.svg?branch=master)](https://coveralls.io/github/LoyaltyNZ/ueberauth_cas?branch=master)
-[![Documentation](http://inch-ci.org/github/LoyaltyNZ/ueberauth_cas.svg)](http://inch-ci.org/github/LoyaltyNZ/ueberauth_cas)
-[![Deps](https://beta.hexfaktor.org/badge/all/github/LoyaltyNZ/ueberauth_cas.svg)](https://beta.hexfaktor.org/github/LoyaltyNZ/ueberauth_cas)
+[![Build](https://travis-ci.org/LoyaltyNZ/ueberauth_cas_jwt.svg?branch=master)](https://travis-ci.org/LoyaltyNZ/ueberauth_cas_jwt)
+[![Coverage](https://coveralls.io/repos/github/LoyaltyNZ/ueberauth_cas_jwt/badge.svg?branch=master)](https://coveralls.io/github/LoyaltyNZ/ueberauth_cas_jwt?branch=master)
+[![Documentation](http://inch-ci.org/github/LoyaltyNZ/ueberauth_cas_jwt.svg)](http://inch-ci.org/github/LoyaltyNZ/ueberauth_cas_jwt)
+[![Deps](https://beta.hexfaktor.org/badge/all/github/LoyaltyNZ/ueberauth_cas_jwt.svg)](https://beta.hexfaktor.org/github/LoyaltyNZ/ueberauth_cas_jwt)
 
 Central Authentication Service strategy for Überauth.
 
-Forked from [https://github.com/marceldegraaf/ueberauth_cas](marceldegraaf/ueberauth_cas) and changed so that it extracts more values from the CAS `serviceResponse`. See `user.ex` for details.
+Forked from [https://github.com/marceldegraaf/ueberauth_cas](marceldegraaf/ueberauth_cas) and altered so that it extracts a JWT from the CAS `serviceResponse`, and decodes and verifies it. See `user.ex` for details.
 
 ## Installation
 
-  1. Add `ueberauth` and `ueberauth_cas` to your list of dependencies in `mix.exs`:
+  1. Add `ueberauth` and `ueberauth_cas_jwt` to your list of dependencies in `mix.exs`:
 
     ```elixir
     def deps do
       [
-        {:ueberauth, "~> 0.2"},
-        {:ueberauth_cas, "~> 1.0.0"},
+        {:ueberauth, "~> 2.0"},
+        {:ueberauth_cas_jwt, "~> 0.0.1"},
       ]
     end
     ```
 
-  2. Ensure `ueberauth_cas` is started before your application:
+  2. Ensure `ueberauth_cas_jwt` is started before your application:
 
     ```elixir
     def application do
-      [applications: [:ueberauth_cas]]
+      [applications: [:ueberauth_cas_jwt]]
     end
     ```
 
@@ -38,6 +38,27 @@ Forked from [https://github.com/marceldegraaf/ueberauth_cas](marceldegraaf/ueber
         base_url: "http://cas.example.com",
         callback: "http://your-app.example.com/auth/cas/callback",
       ]}]
+    ```
+
+  4. Configure the JWT configuration in `config/config.exs`:
+
+    ```elixir
+    # Put the PUBLIC key that is used to sign JWTs here
+    config :joken,
+      rs512: [
+        signer_alg: "RS512",
+        key_pem: """
+        -----BEGIN PUBLIC KEY-----
+        MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxm6F1IB7aDvGd6oTWZga
+        jrIBfXzE0DSKyxrKvBaoaVlPQIznwIfIfYWnoFuhkwPI384Oq3K7gpj3JoIBJu72
+        vvczBg3JhxCPzolRGC5XmKJxbTq/tbqxgwqx43SG7fK/oh0mZYuKV83rsAikhxOo
+        dIaKaQsxxjGIKWkxinEquaLSPQpIEingYpAmL983nGw1pjLY1PR6ltOCpDCjH2YK
+        2wcfC7JqBd6Qvh9+kIiM1RZU3+xpB6bhOaB/fddHtQUMNDdaXHkzNg0MtE3NbU9F
+        Yh8uv2nNFELEayBRPIfCXkkbV0gua0x+/pj8BP35pvj4Tf4Inodwfn4JrirszNBk
+        YQIDAQAB
+        -----END PUBLIC KEY-----
+        """
+      ]
     ```
 
   4. In `AuthController` use the CAS strategy in your `login/4` function:
