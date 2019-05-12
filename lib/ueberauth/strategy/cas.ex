@@ -26,7 +26,7 @@ defmodule Ueberauth.Strategy.CAS do
       %{
         token:   "ST-XXXXX",                  # The CAS Service Token
         refresh_token: nil,
-        token_type: "cas",
+        token_type: "cas_jwt",
         secret: nil,
         expires: nil,
         expires_at: nil,
@@ -121,6 +121,7 @@ defmodule Ueberauth.Strategy.CAS do
       secret: nil,
       expires: nil,
       expires_at: nil,
+      token_type: "cas_jwt",
       scopes: get_in(conn.private.cas_user.jwt, ["roles"]),
       other: %{jwt: conn.private.cas_user.jwt}
     }

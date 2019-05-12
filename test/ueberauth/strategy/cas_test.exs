@@ -139,6 +139,8 @@ defmodule Ueberauth.Strategy.CAS.Test do
     credentials = CAS.credentials(conn)
 
     assert credentials.token == "ST-XXXXX"
+    assert credentials.refresh_token == nil
+    assert credentials.token_type == "cas_jwt"
     assert credentials.secret == nil
     assert credentials.expires == nil
     assert credentials.expires_at == nil

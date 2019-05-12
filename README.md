@@ -61,7 +61,7 @@ Forked from [https://github.com/marceldegraaf/ueberauth_cas](marceldegraaf/ueber
       ]
     ```
 
-  4. In `AuthController` use the CAS strategy in your `login/4` function:
+  5. In `AuthController` use the CAS strategy in your `login/4` function:
 
     ```elixir
     def login(conn, _params, _current_user, _claims) do
