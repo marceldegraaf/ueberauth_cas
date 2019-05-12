@@ -26,7 +26,7 @@ Forked from [https://github.com/marceldegraaf/ueberauth_cas](marceldegraaf/ueber
 
     ```elixir
     def application do
-      [applications: [:ueberauth_cas_jwt]]
+      [extra_applications: [:ueberauth_cas_jwt]]
     end
     ```
 
@@ -37,6 +37,7 @@ Forked from [https://github.com/marceldegraaf/ueberauth_cas](marceldegraaf/ueber
       providers: [cas: {Ueberauth.Strategy.CAS, [
         base_url: "http://cas.example.com",
         callback: "http://your-app.example.com/auth/cas/callback",
+        jwt_role: "crew",
       ]}]
     ```
 

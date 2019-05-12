@@ -55,11 +55,11 @@ defmodule Ueberauth.Strategy.CAS.User do
   defp set_jwt(user, body) do
     case JwtAuthToken.verify_and_validate(jwt(body)) do
       {:ok, jwt} ->
-        Logger.info("JWT ok")
+        Logger.info("JWT token verify and validated ok")
         Map.merge(user, %{jwt: jwt, jwt_valid: true})
 
       {:error, reason} ->
-        Logger.info("JWT token verify failed, reason: #{inspect(reason)}")
+        Logger.info("JWT token verify and validate failed, reason: #{inspect(reason)}")
         Map.merge(user, %{jwt: nil, jwt_valid: false})
     end
   end

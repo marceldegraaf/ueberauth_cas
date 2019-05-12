@@ -11,9 +11,9 @@ defmodule Ueberauth.Strategy.CAS.API do
     settings(:base_url) <> "/login"
   end
 
-  @doc "Returns the public key used to verify JWT tokens."
-  def jwt_public_key do
-    settings(:jwt_public_key)
+  @doc "Returns the value that the JWT must posess in the list of 'roles' to pass JWT validation"
+  def jwt_role do
+    settings(:jwt_role)
   end
 
   @doc "Validate a CAS Service Ticket with the CAS server."

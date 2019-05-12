@@ -6,7 +6,8 @@ config :ueberauth, Ueberauth,
       Ueberauth.Strategy.CAS,
       [
         base_url: "http://cas.example.com",
-        service: "http://svc.example.com"
+        service: "http://svc.example.com",
+        jwt_role: "crew"
       ]
     }
   ]

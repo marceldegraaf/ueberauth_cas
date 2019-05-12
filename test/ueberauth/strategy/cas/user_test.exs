@@ -71,7 +71,40 @@ defmodule Ueberauth.Strategy.CAS.User.Test do
                current_time: fn -> 1_557_356_682 - 60 * 60 end do
                User.from_xml(xml)
              end
-           end) =~ ~r/JWT token verify failed, reason: :signature_error/
+           end) =~ ~r/JWT token verify and validate failed, reason: :signature_error/
+  end
+
+  test "JWT is decoded, fails claim validation: user missing role, jwt_valid is false", %{
+    xml: xml
+  } do
+    # Freeze time prior to when the JWT token expires
+    with_mock Joken.CurrentTime.OS,
+      current_time: fn -> 1_557_356_682 - 60 * 60 end do
+      # Force invalid role
+      with_mock Ueberauth.Strategy.CAS.API,
+        jwt_role: fn -> "super-duper-admin-role" end do
+        user = User.from_xml(xml)
+        assert user.jwt_valid == false
+        assert nil == user.jwt
+      end
+    end
+  end
+
+  test "JWT is decoded, fails claim validation: user missing role, logs a message", %{
+    xml: xml
+  } do
+    assert capture_log(fn ->
+             # Freeze time prior to when the JWT token expires
+             with_mock Joken.CurrentTime.OS,
+               current_time: fn -> 1_557_356_682 - 60 * 60 end do
+               # Force invalid role
+               with_mock Ueberauth.Strategy.CAS.API,
+                 jwt_role: fn -> "super-duper-admin-role" end do
+                 User.from_xml(xml)
+               end
+             end
+           end) =~
+             ~r/JWT token verify and validate failed, reason: \[message: "Invalid token", claim: "roles"/
   end
 
   test "JWT is decoded, passes claim validation, jwt_valid is true and jwt data is decoded", %{
@@ -115,7 +148,7 @@ defmodule Ueberauth.Strategy.CAS.User.Test do
                current_time: fn -> 1_557_356_682 - 60 * 60 end do
                User.from_xml(xml)
              end
-           end) =~ ~r/JWT ok/
+           end) =~ ~r/JWT token verify and validated ok/
   end
 
   test "JWT is decoded, fails claim validation, jwt_valid is false", %{xml: xml} do
@@ -165,6 +198,6 @@ defmodule Ueberauth.Strategy.CAS.User.Test do
                current_time: fn -> 1_557_356_682 - 60 * 60 end do
                User.from_xml(xml)
              end
-           end) =~ ~r/JWT token verify failed, reason: :signature_error/
+           end) =~ ~r/JWT token verify and validate failed, reason: :signature_error/
   end
 end
