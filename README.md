@@ -37,6 +37,7 @@ Forked from [https://github.com/marceldegraaf/ueberauth_cas](marceldegraaf/ueber
       providers: [cas: {Ueberauth.Strategy.CAS, [
         base_url: "http://cas.example.com",
         callback: "http://your-app.example.com/auth/cas/callback",
+        # Ensute that the JWT 'roles' contains this role
         jwt_role: "crew",
       ]}]
     ```
@@ -62,12 +63,37 @@ Forked from [https://github.com/marceldegraaf/ueberauth_cas](marceldegraaf/ueber
       ]
     ```
 
-  5. In `AuthController` use the CAS strategy in your `login/4` function:
+  5. In your `AuthController` implement the appropriate callbacks for Ueuberauth, eg:
 
     ```elixir
-    def login(conn, _params, _current_user, _claims) do
-      conn
-      |> Ueberauth.Strategy.CAS.handle_request!
+    defmodule MyAppWeb.AuthController do
+      use MyAppWeb, :controller
+      plug Ueberauth
+      alias Ueberauth.Strategy.Helpers
+
+      # We'll hit this callback if we fail to successfully authenticate via
+      # ueberauth.
+      def callback(%{assigns: %{ueberauth_failure: fails}} = conn, _params) do
+        conn
+        |> put_flash(:error, "Failed to authenticate.")
+        |> redirect(external: Application.get_env(:console_notify, :console_sso_url))
+      end
+
+      # If we have an ueberauth_auth key set, then we successfully authenticated.
+      # We will pass this through a model called `UserFromAuth` to generate a map
+      # representing our logged in user.  We then store this in the `current_user`
+      # session variable.
+      def callback(%{assigns: %{ueberauth_auth: auth}} = conn, params) do
+        user_params = %{
+          sso_user_id: auth.credentials.other[:jwt]["sso_user_id"],
+          email: auth.info.email,
+          token: auth.credentials.token
+        }
+        conn
+        |> put_flash(:info, "Successfully authenticated.")
+        |> put_session(:current_user, user)
+        |> redirect(to: "/")
+      end
     end
     ```
 
