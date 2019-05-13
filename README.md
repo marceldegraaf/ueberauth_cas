@@ -1,9 +1,6 @@
 # Überauth CAS + JWT Strategy
 
 [![Build](https://travis-ci.org/LoyaltyNZ/ueberauth_cas_jwt.svg?branch=master)](https://travis-ci.org/LoyaltyNZ/ueberauth_cas_jwt)
-[![Coverage](https://coveralls.io/repos/github/LoyaltyNZ/ueberauth_cas_jwt/badge.svg?branch=master)](https://coveralls.io/github/LoyaltyNZ/ueberauth_cas_jwt?branch=master)
-[![Documentation](http://inch-ci.org/github/LoyaltyNZ/ueberauth_cas_jwt.svg)](http://inch-ci.org/github/LoyaltyNZ/ueberauth_cas_jwt)
-[![Deps](https://beta.hexfaktor.org/badge/all/github/LoyaltyNZ/ueberauth_cas_jwt.svg)](https://beta.hexfaktor.org/github/LoyaltyNZ/ueberauth_cas_jwt)
 
 Central Authentication Service strategy for Überauth.
 
@@ -13,7 +10,7 @@ Forked from [https://github.com/marceldegraaf/ueberauth_cas](marceldegraaf/ueber
 
   1. Add `ueberauth` and `ueberauth_cas_jwt` to your list of dependencies in `mix.exs`:
 
-    ```elixir
+    ```
     def deps do
       [
         {:ueberauth, "~> 2.0"},
@@ -24,7 +21,7 @@ Forked from [https://github.com/marceldegraaf/ueberauth_cas](marceldegraaf/ueber
 
   2. Ensure `ueberauth_cas_jwt` is started before your application:
 
-    ```elixir
+    ```
     def application do
       [extra_applications: [:ueberauth_cas_jwt]]
     end
@@ -32,7 +29,7 @@ Forked from [https://github.com/marceldegraaf/ueberauth_cas](marceldegraaf/ueber
 
   3. Configure the CAS integration in `config/config.exs`:
 
-    ```elixir
+    ```
     config :ueberauth, Ueberauth,
       providers: [cas: {Ueberauth.Strategy.CAS, [
         base_url: "http://cas.example.com",
@@ -44,7 +41,7 @@ Forked from [https://github.com/marceldegraaf/ueberauth_cas](marceldegraaf/ueber
 
   4. Configure the JWT configuration in `config/config.exs`:
 
-    ```elixir
+    ```
     # Put the PUBLIC key that is used to sign JWTs here
     config :joken,
       rs512: [
@@ -65,7 +62,7 @@ Forked from [https://github.com/marceldegraaf/ueberauth_cas](marceldegraaf/ueber
 
   5. In your `AuthController` implement the appropriate callbacks for Ueuberauth, eg:
 
-    ```elixir
+    ```
     defmodule MyAppWeb.AuthController do
       use MyAppWeb, :controller
       plug Ueberauth
@@ -100,5 +97,4 @@ Forked from [https://github.com/marceldegraaf/ueberauth_cas](marceldegraaf/ueber
 ## Compatibility
 
 Überauth CAS was tested with the [Casino](http://casino.rbcas.com/) CAS server
-implementation. Please let me know if Überauth CAS is incompatible with your CAS
-server, and why.
+implementation.
