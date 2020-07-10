@@ -12,41 +12,41 @@ Central Authentication Service strategy for Überauth.
 
   1. Add `ueberauth` and `ueberauth_cas` to your list of dependencies in `mix.exs`:
 
-    ```elixir
-    def deps do
-      [
-        {:ueberauth, "~> 0.2"},
-        {:ueberauth_cas, "~> 1.0.0"},
-      ]
-    end
-    ```
+  ```elixir
+  def deps do
+    [
+      {:ueberauth, "~> 0.2"},
+      {:ueberauth_cas, "~> 1.0.0"}
+    ]
+  end
+ ```
 
   2. Ensure `ueberauth_cas` is started before your application:
 
-    ```elixir
-    def application do
-      [applications: [:ueberauth_cas]]
-    end
-    ```
+  ```elixir
+  def application do
+    [applications: [:ueberauth_cas]]
+  end
+  ```
 
   3. Configure the CAS integration in `config/config.exs`:
 
-    ```elixir
-    config :ueberauth, Ueberauth,
-      providers: [cas: {Ueberauth.Strategy.CAS, [
-        base_url: "http://cas.example.com",
-        callback: "http://your-app.example.com/auth/cas/callback",
-      ]}]
-    ```
+  ```elixir
+  config :ueberauth, Ueberauth,
+    providers: [cas: {Ueberauth.Strategy.CAS, [
+      base_url: "http://cas.example.com",
+      callback: "http://your-app.example.com/auth/cas/callback",
+    ]}]
+  ```
 
   4. In `AuthController` use the CAS strategy in your `login/4` function:
 
-    ```elixir
-    def login(conn, _params, _current_user, _claims) do
-      conn
-      |> Ueberauth.Strategy.CAS.handle_request!
-    end
-    ```
+  ```elixir
+  def login(conn, _params, _current_user, _claims) do
+    conn
+    |> Ueberauth.Strategy.CAS.handle_request!
+  end
+  ```
 
 ## Compatibility
 
