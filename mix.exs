@@ -8,7 +8,7 @@ defmodule UeberauthCAS.Mixfile do
     [
       app: :ueberauth_cas,
       version: @version,
-      elixir: "~> 1.2",
+      elixir: "~> 1.8",
       name: "Ueberauth CAS strategy",
       package: package(),
       build_embedded: Mix.env == :prod,
@@ -29,14 +29,14 @@ defmodule UeberauthCAS.Mixfile do
 
   defp deps do
     [
-      {:ueberauth, "~> 0.2"},
-      {:httpoison, "~> 0.11"},
-      {:floki, "~> 0.17"},
-      {:excoveralls, "~> 0.5", only: :test},
-      {:inch_ex, "~> 0.5.0", only: :docs},
-      {:earmark, "~> 1.2", only: :dev},
-      {:ex_doc, "~> 0.16", only: :dev},
-      {:mock, "~> 0.2", only: :test},
+      {:ueberauth, "~> 0.6.3"},
+      {:httpoison, "~> 1.7.0"},
+      {:floki, "~> 0.27.0"},
+      {:excoveralls, "~> 0.13.0", only: :test},
+      {:inch_ex, "~> 2.0.0", only: :docs},
+      {:earmark, "~> 1.4.9", only: :dev},
+      {:ex_doc, "~> 0.22.1", only: :dev},
+      {:mock, "~> 0.3.5", only: :test},
     ]
   end
 
