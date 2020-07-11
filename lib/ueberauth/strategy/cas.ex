@@ -114,9 +114,9 @@ defmodule Ueberauth.Strategy.CAS do
     |> handle_validate_ticket_response(conn)
   end
 
-  defp handle_validate_ticket_response({:error, message}, conn) do
+  defp handle_validate_ticket_response({:error, {code, message}}, conn) do
     conn
-    |> set_errors!([error("error", message)])
+    |> set_errors!([error(code, message)])
   end
 
   defp handle_validate_ticket_response({:ok, %CAS.User{} = user}, conn) do

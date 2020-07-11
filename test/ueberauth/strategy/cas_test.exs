@@ -79,7 +79,8 @@ defmodule Ueberauth.Strategy.CAS.Test do
     ] do
       conn = CAS.handle_callback!(%Plug.Conn{params: %{"ticket" => "ST-XXXXX"}})
 
-      assert List.first(conn.assigns.ueberauth_failure.errors).message == "INVALID_TICKET"
+      assert List.first(conn.assigns.ueberauth_failure.errors).message_key == "INVALID_TICKET"
+      assert List.first(conn.assigns.ueberauth_failure.errors).message == "Ticket 'ST-XXXXX' already consumed"
     end
   end
 
