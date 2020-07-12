@@ -52,6 +52,9 @@ defmodule Ueberauth.Strategy.CAS.User.Test do
           <cas:email>jdoe@example.org</cas:email>
           <cas:affiliation>staff</cas:affiliation>
           <cas:affiliation>faculty</cas:affiliation>
+          <cas:numbers>1</cas:numbers>
+          <cas:numbers>3</cas:numbers>
+          <cas:numbers>2</cas:numbers>
         </cas:attributes>
         <cas:proxyGrantingTicket>PGTIOU-84678-8a9d...</cas:proxyGrantingTicket>
       </cas:authenticationSuccess>
@@ -67,7 +70,8 @@ defmodule Ueberauth.Strategy.CAS.User.Test do
              "lastname" => "Doe",
              "title" => "Mr.",
              "email" => "jdoe@example.org",
-             "affiliation" => ["staff", "faculty"]
+             "affiliation" => ["staff", "faculty"],
+             "numbers" => ["1", "3", "2"] 
            }
   end
 end

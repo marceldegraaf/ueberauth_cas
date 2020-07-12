@@ -57,8 +57,28 @@ defmodule Ueberauth.Strategy.CAS do
   ## User data
 
   In the ticket validation step (step 4), user information is retrieved.
-  See `Ueberauth.Strategy.CAS.User` for documentation on which CAS attributes
-  are mapped to which Überauth attribute.
+  See `Ueberauth.Strategy.CAS.User` for documentation on accessing CAS attributes.
+  Some attributes are mapped to Überauth info fields, as described below.
+
+  ### Default mapping
+
+  By default, attributes are the same as the Überauth field.
+  For example, the field `:last_name` will be set from an attribute `cas:lastName`.
+
+  ### Configuring Überauth mapping
+
+  The mapping can be specified in the configuration:
+
+  ```elixir
+  config :ueberauth, Ueberauth,
+     providers: [cas: {Ueberauth.Strategy.CAS, [
+       base_url: "http://cas.example.com",
+       callback: "http://your-app.example.com/auth/cas/callback",
+       attributes: %{
+          last_name: "surname"
+       },
+     ]}]
+  ```
 
   [login]: https://apereo.github.io/cas/6.2.x/protocol/CAS-Protocol-Specification.html#21-login-as-credential-requestor
   [validate]: https://apereo.github.io/cas/6.2.x/protocol/CAS-Protocol-Specification.html#25-servicevalidate-cas-20
@@ -105,7 +125,7 @@ defmodule Ueberauth.Strategy.CAS do
   end
 
   @doc "Ueberauth UID callback."
-  def uid(conn), do: conn.private.cas_user.email
+  def uid(conn), do: conn.private.cas_user.name
 
   @doc """
   Ueberauth extra information callback. Returns all information the CAS
@@ -124,10 +144,17 @@ defmodule Ueberauth.Strategy.CAS do
   """
   def info(conn) do
     user = conn.private.cas_user
+    attributes = user.attributes
 
     %Info{
       name: user.name,
-      email: user.email
+      email: get_attribute(attributes, :email),
+      birthday: get_attribute(attributes, :birthday),
+      description: get_attribute(attributes, :description),
+      first_name: get_attribute(attributes, :first_name),
+      last_name: get_attribute(attributes, :last_name),
+      nickname: get_attribute(attributes, :nickname),
+      phone: get_attribute(attributes, :phone)
     }
   end
 
@@ -138,7 +165,8 @@ defmodule Ueberauth.Strategy.CAS do
     %Credentials{
       expires: false,
       token: conn.private.cas_ticket,
-      other: conn.private.cas_user.roles
+      token_type: "service_ticket",
+      other: Map.get(conn.private.cas_user.attributes, "roles")
     }
   end
 
@@ -166,5 +194,21 @@ defmodule Ueberauth.Strategy.CAS do
   defp handle_validate_ticket_response({:ok, %CAS.User{} = user}, conn) do
     conn
     |> put_private(:cas_user, user)
+  end
+
+  defp get_attribute(attributes, key) do
+    {_, settings} = Application.get_env(:ueberauth, Ueberauth)[:providers][:cas]
+
+    name =
+      Keyword.get(settings, :attributes, %{})
+      |> Map.get(key, Atom.to_string(key))
+
+    value = Map.get(attributes, name)
+
+    if is_list(value) do
+      Enum.at(value, 0)
+    else
+      value
+    end
   end
 end

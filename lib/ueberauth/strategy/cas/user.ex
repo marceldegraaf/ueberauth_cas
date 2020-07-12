@@ -53,7 +53,7 @@ defmodule Ueberauth.Strategy.CAS.User do
   - `:name` - The name returned by the serviceResponse
   - `:attributes` - Other attributes returned by the serviceResponse
   """
-  defstruct name: nil, email: nil, roles: nil
+  defstruct name: nil, email: nil, roles: nil, attributes: %{}
 
   alias Ueberauth.Strategy.CAS.User
 
