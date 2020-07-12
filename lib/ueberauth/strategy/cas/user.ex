@@ -38,9 +38,6 @@ defmodule Ueberauth.Strategy.CAS.User do
   end
   ```
 
-  The `email` and `roles` fields are deprecated and will be
-  removed in a future version.
-
   [response]: https://apereo.github.io/cas/6.2.x/protocol/CAS-Protocol-V2-Specification.html#appendix-a-cas-response-xml-schema
   [old]: https://apereo.github.io/cas/6.2.x/protocol/CAS-Protocol-V2-Specification.html#appendix-a-cas-response-xml-schema
   """
@@ -53,7 +50,7 @@ defmodule Ueberauth.Strategy.CAS.User do
   - `:name` - The name returned by the serviceResponse
   - `:attributes` - Other attributes returned by the serviceResponse
   """
-  defstruct name: nil, email: nil, roles: nil, attributes: %{}
+  defstruct name: nil, attributes: %{}
 
   alias Ueberauth.Strategy.CAS.User
 
@@ -66,9 +63,6 @@ defmodule Ueberauth.Strategy.CAS.User do
     %User{}
     |> Map.put(:name, name)
     |> Map.put(:attributes, attributes)
-    # Deprecated fields
-    |> Map.put(:email, Map.get(attributes, "email", name))
-    |> Map.put(:roles, Map.get(attributes, "roles", ["developer", "admin"]))
   end
 
   defp get_user(body) do

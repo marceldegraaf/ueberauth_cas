@@ -62,8 +62,8 @@ defmodule Ueberauth.Strategy.CAS.Test do
       conn = CAS.handle_callback!(%Plug.Conn{params: %{"ticket" => "ST-XXXXX"}})
 
       assert conn.private.cas_ticket == "ST-XXXXX"
-      assert conn.private.cas_user.email == "mail@marceldegraaf.net"
       assert conn.private.cas_user.name == "mail@marceldegraaf.net"
+      refute conn.private.cas_user.attributes["isFromNewLogin"]
     end
   end
 

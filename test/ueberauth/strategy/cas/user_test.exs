@@ -2,27 +2,6 @@ defmodule Ueberauth.Strategy.CAS.User.Test do
   use ExUnit.Case
 
   alias Ueberauth.Strategy.CAS.User
-
-  test "legacy fields are filled" do
-    xml = """
-    <cas:serviceResponse xmlns:cas="http://www.yale.edu/tp/cas">
-      <cas:authenticationSuccess>
-        <cas:user>mail@marceldegraaf.net</cas:user>
-        <cas:attributes>
-          <cas:authenticationDate>2016-06-29T21:53:41Z</cas:authenticationDate>
-          <cas:longTermAuthenticationRequestTokenUsed>false</cas:longTermAuthenticationRequestTokenUsed>
-          <cas:isFromNewLogin>true</cas:isFromNewLogin>
-        </cas:attributes>
-      </cas:authenticationSuccess>
-    </cas:serviceResponse>
-    """
-
-    user = User.from_xml(xml)
-
-    assert user.email == "mail@marceldegraaf.net"
-    assert user.roles == ["developer", "admin"]
-    assert user.name == user.email
-  end
   
   test "response without custom attributes works" do
     xml = """
@@ -35,9 +14,7 @@ defmodule Ueberauth.Strategy.CAS.User.Test do
 
     user = User.from_xml(xml)
 
-    assert user.email == "mail@marceldegraaf.net"
-    assert user.roles == ["developer", "admin"]
-    assert user.name == user.email
+    assert user.name == "mail@marceldegraaf.net"
   end
 
   test "custom attributes are read" do
