@@ -12,7 +12,7 @@ defmodule Ueberauth.Strategy.CAS.API.Test do
     ok_xml = """
     <cas:serviceResponse xmlns:cas="http://www.yale.edu/tp/cas">
       <cas:authenticationSuccess>
-        <cas:user>Mail@marceldegraaf.net</cas:user>
+        <cas:user>mail@marceldegraaf.net</cas:user>
         <cas:attributes>
           <cas:authenticationDate>2016-06-29T21:53:41Z</cas:authenticationDate>
           <cas:longTermAuthenticationRequestTokenUsed>false</cas:longTermAuthenticationRequestTokenUsed>
@@ -70,7 +70,7 @@ defmodule Ueberauth.Strategy.CAS.API.Test do
       end do
       {:error, {code, message}} = API.validate_ticket("ST-XXXXX", %Plug.Conn{})
 
-      assert code == "UNKNOWN_ERROR"
+      assert code == "unknown_error"
       assert message == "An unknown error occurred"
     end
   end
@@ -106,7 +106,7 @@ defmodule Ueberauth.Strategy.CAS.API.Test do
       end do
       {:error, {code, message}} = API.validate_ticket("ST-XXXXX", %Plug.Conn{})
 
-      assert code == "UNKNOWN_ERROR"
+      assert code == "unknown_error"
       assert message == "Unknown error"
     end
   end
@@ -118,7 +118,7 @@ defmodule Ueberauth.Strategy.CAS.API.Test do
       end do
       {:error, {code, _}} = API.validate_ticket("ST-XXXXX", %Plug.Conn{})
 
-      assert code == "MALFORMED_XML"
+      assert code == "malformed_xml"
     end
   end
 end
