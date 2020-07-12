@@ -16,7 +16,7 @@ defmodule Ueberauth.Strategy.CAS.Test do
     ok_xml = """
     <cas:serviceResponse xmlns:cas="http://www.yale.edu/tp/cas">
       <cas:authenticationSuccess>
-        <cas:user>Mail@marceldegraaf.net</cas:user>
+        <cas:user>mail@marceldegraaf.net</cas:user>
         <cas:attributes>
           <cas:authenticationDate>2016-06-29T21:53:41Z</cas:authenticationDate>
           <cas:longTermAuthenticationRequestTokenUsed>false</cas:longTermAuthenticationRequestTokenUsed>
