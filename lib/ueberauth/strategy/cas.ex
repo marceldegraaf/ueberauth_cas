@@ -7,7 +7,7 @@ defmodule Ueberauth.Strategy.CAS do
   The login flow looks like this:
 
   1. User is redirected to the CAS server's login page by
-    `Ueberauth.Strategy.CAS.handle_request!`
+    `Ueberauth.Strategy.CAS.handle_request!/1`
 
   2. User signs in to the CAS server.
 
@@ -18,6 +18,70 @@ defmodule Ueberauth.Strategy.CAS do
     fetching the user's information at the same time.
 
   5. User can proceed to use the Elixir application.
+
+  ## Protocol compliance
+
+  This strategy only supports a subset of the CAS protocol (version 2.0 and 3.0).
+  Notable, there is no support for proxy-related stuff.
+
+  More specifically, it supports following CAS URIs:
+
+  - `/login`
+
+     The strategy supports calling `/login` to enable the user to login.
+     This is known as the [credential requestor][login]
+     mode in the CAS specification.
+
+    The strategy only supports the `service` parameter, and currently does
+    not provide support for `renew`, `gateway` or `method`.
+
+  - `/serviceValidate`
+
+    After a successful login, the strategy validates the ticket and retrieves
+    information about the user, as described in the [specification][validate].
+    
+    The strategy only supports the required params, `service` and `ticket`.
+    There is no support for other params.
+
+  ## Errors
+
+  If the login fails, the strategy will fail with error key `missing_ticket`.
+
+  If the ticket validation fails, the error key depends:
+
+  - If the response is no valid XML, the error key is `malformed_xml`.
+  - If there is proper error code in the CAS serviceResponse, the error code will
+    be used as error key, while the description will be used as error message.
+  - In other cases, the error key will be `unknown_error`.
+
+  ## User data
+
+  In the ticket validation step (step 4), user information is retrieved.
+  See `Ueberauth.Strategy.CAS.User` for documentation on accessing CAS attributes.
+  Some attributes are mapped to Überauth info fields, as described below.
+
+  ### Default mapping
+
+  By default, attributes are the same as the Überauth field.
+  For example, the field `:last_name` will be set from an attribute `cas:lastName`.
+
+  ### Configuring Überauth mapping
+
+  The mapping can be specified in the configuration:
+
+  ```elixir
+  config :ueberauth, Ueberauth,
+     providers: [cas: {Ueberauth.Strategy.CAS, [
+       base_url: "http://cas.example.com",
+       callback: "http://your-app.example.com/auth/cas/callback",
+       attributes: %{
+          last_name: "surname"
+       },
+     ]}]
+  ```
+
+  [login]: https://apereo.github.io/cas/6.2.x/protocol/CAS-Protocol-Specification.html#21-login-as-credential-requestor
+  [validate]: https://apereo.github.io/cas/6.2.x/protocol/CAS-Protocol-Specification.html#25-servicevalidate-cas-20
   """
 
   use Ueberauth.Strategy
@@ -61,7 +125,7 @@ defmodule Ueberauth.Strategy.CAS do
   end
 
   @doc "Ueberauth UID callback."
-  def uid(conn), do: conn.private.cas_user.email
+  def uid(conn), do: conn.private.cas_user.name
 
   @doc """
   Ueberauth extra information callback. Returns all information the CAS
@@ -80,10 +144,17 @@ defmodule Ueberauth.Strategy.CAS do
   """
   def info(conn) do
     user = conn.private.cas_user
+    attributes = user.attributes
 
     %Info{
       name: user.name,
-      email: user.email
+      email: get_attribute(attributes, :email),
+      birthday: get_attribute(attributes, :birthday),
+      description: get_attribute(attributes, :description),
+      first_name: get_attribute(attributes, :first_name),
+      last_name: get_attribute(attributes, :last_name),
+      nickname: get_attribute(attributes, :nickname),
+      phone: get_attribute(attributes, :phone)
     }
   end
 
@@ -94,12 +165,13 @@ defmodule Ueberauth.Strategy.CAS do
     %Credentials{
       expires: false,
       token: conn.private.cas_ticket,
-      other: conn.private.cas_user.roles,
+      token_type: "service_ticket",
+      other: Map.get(conn.private.cas_user.attributes, "roles")
     }
   end
 
   defp redirect_url(conn) do
-    CAS.API.login_url <> "?service=#{callback_url(conn)}"
+    CAS.API.login_url() <> "?service=#{callback_url(conn)}"
   end
 
   defp handle_ticket(conn, ticket) do
@@ -114,9 +186,9 @@ defmodule Ueberauth.Strategy.CAS do
     |> handle_validate_ticket_response(conn)
   end
 
-  defp handle_validate_ticket_response({:error, message}, conn) do
+  defp handle_validate_ticket_response({:error, {code, message}}, conn) do
     conn
-    |> set_errors!([error("error", message)])
+    |> set_errors!([error(code, message)])
   end
 
   defp handle_validate_ticket_response({:ok, %CAS.User{} = user}, conn) do
@@ -124,4 +196,19 @@ defmodule Ueberauth.Strategy.CAS do
     |> put_private(:cas_user, user)
   end
 
+  defp get_attribute(attributes, key) do
+    {_, settings} = Application.get_env(:ueberauth, Ueberauth)[:providers][:cas]
+
+    name =
+      Keyword.get(settings, :attributes, %{})
+      |> Map.get(key, Atom.to_string(key))
+
+    value = Map.get(attributes, name)
+
+    if is_list(value) do
+      Enum.at(value, 0)
+    else
+      value
+    end
+  end
 end
