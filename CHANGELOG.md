@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## Version 2.0.0
 
 - Updated all dependencies.
 - More robust error handling. A proper XML parser is now used.

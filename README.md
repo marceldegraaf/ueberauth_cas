@@ -15,7 +15,7 @@ Central Authentication Service strategy for Überauth.
    def deps do
      [
        {:ueberauth, "~> 0.2"},
-       {:ueberauth_cas, "~> 1.0.0"}
+       {:ueberauth_cas, "~> 2.0.0"}
      ]
    end
    ```
