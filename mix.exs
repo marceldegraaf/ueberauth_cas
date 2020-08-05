@@ -17,6 +17,7 @@ defmodule UeberauthCAS.Mixfile do
       homepage_url: @url,
       description: "An Ueberauth strategy for CAS authentication.",
       deps: deps(),
+      docs: docs(),
       test_coverage: [tool: ExCoveralls]
     ]
   end
@@ -40,9 +41,13 @@ defmodule UeberauthCAS.Mixfile do
     ]
   end
 
+  defp docs do
+    [extras: ["README.md", "CHANGELOG.md"]]
+  end
+
   defp package do
     [
-      files: ["lib", "mix.exs", "README.md", "LICENSE.md"],
+      files: ["lib", "mix.exs", "README.md", "LICENSE.md", "CHANGELOG.md"],
       maintainers: ["Marcel de Graaf"],
       licenses: ["MIT"],
       links: %{GitHub: @url}
