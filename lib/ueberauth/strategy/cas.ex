@@ -191,6 +191,11 @@ defmodule Ueberauth.Strategy.CAS do
     |> set_errors!([error(code, message)])
   end
 
+  defp handle_validate_ticket_response({:error, reason}, conn) do
+    conn
+    |> set_errors!([error("NETWORK_ERROR", "An error occurred: #{reason}")])
+  end
+
   defp handle_validate_ticket_response({:ok, %CAS.User{} = user}, conn) do
     conn
     |> put_private(:cas_user, user)
