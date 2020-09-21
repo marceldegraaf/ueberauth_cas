@@ -33,10 +33,10 @@ defmodule UeberauthCAS.Mixfile do
       {:ueberauth, "~> 0.6.3"},
       {:httpoison, "~> 1.7.0"},
       {:sweet_xml, "~> 0.6.6"},
-      {:excoveralls, "~> 0.13.0", only: :test},
+      {:excoveralls, "~> 0.13.1", only: :test},
       {:inch_ex, "~> 2.0.0", only: :docs},
-      {:earmark, "~> 1.4.9", only: :dev},
-      {:ex_doc, "~> 0.22.1", only: :dev},
+      {:earmark, "~> 1.4.10", only: :dev},
+      {:ex_doc, "~> 0.22.6", only: :dev},
       {:mock, "~> 0.3.5", only: :test}
     ]
   end
