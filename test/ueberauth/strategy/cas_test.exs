@@ -80,6 +80,19 @@ defmodule Ueberauth.Strategy.CAS.Test do
     end
   end
 
+  test "network error propagates" do
+    with_mock HTTPoison, [
+      get: fn(_url, _opts, _params) ->
+        {:error, %HTTPoison.Error{reason: :timeout, id: nil}}
+      end
+    ] do
+      conn = CAS.handle_callback!(%Plug.Conn{params: %{"ticket" => "ST-XXXXX"}})
+
+      assert List.first(conn.assigns.ueberauth_failure.errors).message_key == "NETWORK_ERROR"
+      assert List.first(conn.assigns.ueberauth_failure.errors).message == "An error occurred: timeout"
+    end
+  end
+
   test "cleanup callback", %{conn: conn} do
     conn = CAS.handle_cleanup!(conn)
 
