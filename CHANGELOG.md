@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 2.0.1
+
+- [Fix] Propagate network errors to Überauth instead of crashing.
+
 ## Version 2.0.0
 
 - Updated all dependencies.
