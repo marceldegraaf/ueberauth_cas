@@ -53,8 +53,12 @@ defmodule Ueberauth.Strategy.CAS.API do
     {error_code || "unknown_error", message || "Unknown error"}
   end
 
-  defp validate_url do
-    settings(:base_url) <> "/serviceValidate"
+  def validate_url do
+    settings(:base_url) <> validate_path()
+  end
+
+  defp validate_path do
+    settings(:validation_path) || "/serviceValidate"
   end
 
   defp settings(key) do

@@ -43,6 +43,9 @@ defmodule Ueberauth.Strategy.CAS do
     The strategy only supports the required params, `service` and `ticket`.
     There is no support for other params.
 
+    The validation path can be overridden via configuration to comply with
+    CAS 3.0 and use `/p3/serviceValidate`.
+
   ## Errors
 
   If the login fails, the strategy will fail with error key `missing_ticket`.
@@ -73,6 +76,7 @@ defmodule Ueberauth.Strategy.CAS do
   config :ueberauth, Ueberauth,
      providers: [cas: {Ueberauth.Strategy.CAS, [
        base_url: "http://cas.example.com",
+       validation_path: "/serviceValidate",
        callback: "http://your-app.example.com/auth/cas/callback",
        attributes: %{
           last_name: "surname"
