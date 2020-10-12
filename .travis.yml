@@ -5,6 +5,7 @@ elixir:
   - "1.8"
   - "1.9"
   - "1.10"
+  - "1.11"
 
 opt_release:
   - "20.3.8"
@@ -19,6 +20,8 @@ jobs:
     - elixir: "1.9"
       otp_release: "23.0"
     - elixir: "1.10"
+      otp_release: "20.3.8"
+    - elixir: "1.11"
       otp_release: "20.3.8"
 
 env:
