@@ -77,7 +77,7 @@ defmodule Ueberauth.Strategy.CAS do
      providers: [cas: {Ueberauth.Strategy.CAS, [
        base_url: "http://cas.example.com",
        validation_path: "/serviceValidate",
-       callback: "http://your-app.example.com/auth/cas/callback",
+       callback_url: "http://your-app.example.com/auth/cas/callback",
        attributes: %{
           last_name: "surname"
        },

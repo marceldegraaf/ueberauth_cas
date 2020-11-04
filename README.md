@@ -34,12 +34,12 @@ Central Authentication Service strategy for Überauth.
    config :ueberauth, Ueberauth,
      providers: [cas: {Ueberauth.Strategy.CAS, [
        base_url: "http://cas.example.com",
-       callback: "http://your-app.example.com/auth/cas/callback",
+       callback_url: "http://your-app.example.com/auth/cas/callback",
      ]}]
    ```
 
 4. Include the Überauth plug in your controller:
-  
+
    ```elixir
    defmodule MyApp.AuthController do
      use MyApp.Web, :controller
