@@ -220,4 +220,32 @@ defmodule Ueberauth.Strategy.CAS do
       value
     end
   end
+
+  defp redirect_url(conn) do
+    login_url(conn) <> "?service=" <> callback_url(conn)
+  end
+
+  defp validate_url(conn) do
+    base_url(conn) <> validation_path(conn)
+  end
+
+  defp login_url(conn) do
+    base_url(conn) <> "/login"
+  end
+
+  defp base_url(conn) do
+    Keyword.get(settings(conn), :base_url)
+  end
+
+  defp validation_path(conn) do
+    Keyword.get(settings(conn), :validation_path, "/serviceValidate")
+  end
+
+  defp attributes(conn) do
+    Keyword.get(settings(conn), :attributes, %{})
+  end
+
+  defp settings(conn) do
+    Ueberauth.Strategy.Helpers.options(conn) || []
+  end
 end
