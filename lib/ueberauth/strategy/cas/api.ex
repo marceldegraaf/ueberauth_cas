@@ -3,19 +3,14 @@ defmodule Ueberauth.Strategy.CAS.API do
   CAS server API implementation.
   """
 
-  use Ueberauth.Strategy
   alias Ueberauth.Strategy.CAS
 
   import SweetXml
 
-  @doc "Returns the URL to this CAS server's login page."
-  def login_url do
-    settings(:base_url) <> "/login"
-  end
-
   @doc "Validate a CAS Service Ticket with the CAS server."
-  def validate_ticket(ticket, conn) do
-    HTTPoison.get(validate_url(), [], params: %{ticket: ticket, service: callback_url(conn)})
+  def validate_ticket(ticket, validate_url, service) do
+    validate_url
+    |> HTTPoison.get([], params: %{ticket: ticket, service: service})
     |> handle_validate_ticket_response()
   end
 
@@ -51,18 +46,5 @@ defmodule Ueberauth.Strategy.CAS.API do
       |> sanitize_string()
 
     {error_code || "unknown_error", message || "Unknown error"}
-  end
-
-  def validate_url do
-    settings(:base_url) <> validate_path()
-  end
-
-  defp validate_path do
-    settings(:validation_path) || "/serviceValidate"
-  end
-
-  defp settings(key) do
-    {_, settings} = Application.get_env(:ueberauth, Ueberauth)[:providers][:cas]
-    settings[key]
   end
 end

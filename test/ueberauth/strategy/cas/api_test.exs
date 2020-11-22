@@ -4,10 +4,6 @@ defmodule Ueberauth.Strategy.CAS.API.Test do
 
   alias Ueberauth.Strategy.CAS.API
 
-  test "generates a cas login url" do
-    assert API.login_url() == "http://cas.example.com/login"
-  end
-
   test "validates a valid ticket response" do
     ok_xml = """
     <cas:serviceResponse xmlns:cas="http://www.yale.edu/tp/cas">
@@ -33,7 +29,7 @@ defmodule Ueberauth.Strategy.CAS.API.Test do
         {:ok, %HTTPoison.Response{status_code: 200, body: ok_xml, headers: []}}
       end do
       {:ok, %Ueberauth.Strategy.CAS.User{name: name}} =
-        API.validate_ticket("ST-XXXXX", %Plug.Conn{})
+        API.validate_ticket("ST-XXXXX", "http://cas.example.com/serviceValidate", "service_name")
 
       assert name == "mail@marceldegraaf.net"
     end
@@ -50,7 +46,8 @@ defmodule Ueberauth.Strategy.CAS.API.Test do
       get: fn _url, _opts, _params ->
         {:ok, %HTTPoison.Response{status_code: 200, body: error_xml, headers: []}}
       end do
-      {:error, {code, message}} = API.validate_ticket("ST-XXXXX", %Plug.Conn{})
+      {:error, {code, message}} =
+        API.validate_ticket("ST-XXXXX", "http://cas.example.com/serviceValidate", "service_name")
 
       assert code == "INVALID_TICKET"
       assert message == "Ticket 'ST-XXXXX' already consumed"
@@ -68,7 +65,8 @@ defmodule Ueberauth.Strategy.CAS.API.Test do
       get: fn _url, _opts, _params ->
         {:ok, %HTTPoison.Response{status_code: 200, body: unknown_error_xml, headers: []}}
       end do
-      {:error, {code, message}} = API.validate_ticket("ST-XXXXX", %Plug.Conn{})
+      {:error, {code, message}} =
+        API.validate_ticket("ST-XXXXX", "http://cas.example.com/serviceValidate", "service_name")
 
       assert code == "unknown_error"
       assert message == "An unknown error occurred"
@@ -86,7 +84,8 @@ defmodule Ueberauth.Strategy.CAS.API.Test do
       get: fn _url, _opts, _params ->
         {:ok, %HTTPoison.Response{status_code: 200, body: unknown_error_xml, headers: []}}
       end do
-      {:error, {code, message}} = API.validate_ticket("ST-XXXXX", %Plug.Conn{})
+      {:error, {code, message}} =
+        API.validate_ticket("ST-XXXXX", "http://cas.example.com/serviceValidate", "service_name")
 
       assert code == "CONNECTION_ERROR"
       assert message == "Unknown error"
@@ -104,7 +103,8 @@ defmodule Ueberauth.Strategy.CAS.API.Test do
       get: fn _url, _opts, _params ->
         {:ok, %HTTPoison.Response{status_code: 200, body: unknown_error_xml, headers: []}}
       end do
-      {:error, {code, message}} = API.validate_ticket("ST-XXXXX", %Plug.Conn{})
+      {:error, {code, message}} =
+        API.validate_ticket("ST-XXXXX", "http://cas.example.com/serviceValidate", "service_name")
 
       assert code == "unknown_error"
       assert message == "Unknown error"
@@ -116,7 +116,8 @@ defmodule Ueberauth.Strategy.CAS.API.Test do
       get: fn _url, _opts, _params ->
         {:ok, %HTTPoison.Response{status_code: 200, body: "blip blob", headers: []}}
       end do
-      {:error, {code, _}} = API.validate_ticket("ST-XXXXX", %Plug.Conn{})
+      {:error, {code, _}} =
+        API.validate_ticket("ST-XXXXX", "http://cas.example.com/serviceValidate", "service_name")
 
       assert code == "malformed_xml"
     end

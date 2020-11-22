@@ -77,7 +77,7 @@ defmodule Ueberauth.Strategy.CAS do
      providers: [cas: {Ueberauth.Strategy.CAS, [
        base_url: "http://cas.example.com",
        validation_path: "/serviceValidate",
-       callback: "http://your-app.example.com/auth/cas/callback",
+       callback_url: "http://your-app.example.com/auth/cas/callback",
        attributes: %{
           last_name: "surname"
        },
@@ -99,8 +99,7 @@ defmodule Ueberauth.Strategy.CAS do
   Ueberauth `request` handler. Redirects to the CAS server's login page.
   """
   def handle_request!(conn) do
-    conn
-    |> redirect!(redirect_url(conn))
+    redirect!(conn, redirect_url(conn))
   end
 
   @doc """
@@ -148,17 +147,18 @@ defmodule Ueberauth.Strategy.CAS do
   """
   def info(conn) do
     user = conn.private.cas_user
-    attributes = user.attributes
+    user_attributes = user.attributes
+    attribute_mapping = attributes(conn)
 
     %Info{
       name: user.name,
-      email: get_attribute(attributes, :email),
-      birthday: get_attribute(attributes, :birthday),
-      description: get_attribute(attributes, :description),
-      first_name: get_attribute(attributes, :first_name),
-      last_name: get_attribute(attributes, :last_name),
-      nickname: get_attribute(attributes, :nickname),
-      phone: get_attribute(attributes, :phone)
+      email: get_attribute(attribute_mapping, user_attributes, :email),
+      birthday: get_attribute(attribute_mapping, user_attributes, :birthday),
+      description: get_attribute(attribute_mapping, user_attributes, :description),
+      first_name: get_attribute(attribute_mapping, user_attributes, :first_name),
+      last_name: get_attribute(attribute_mapping, user_attributes, :last_name),
+      nickname: get_attribute(attribute_mapping, user_attributes, :nickname),
+      phone: get_attribute(attribute_mapping, user_attributes, :phone)
     }
   end
 
@@ -174,10 +174,6 @@ defmodule Ueberauth.Strategy.CAS do
     }
   end
 
-  defp redirect_url(conn) do
-    CAS.API.login_url() <> "?service=#{callback_url(conn)}"
-  end
-
   defp handle_ticket(conn, ticket) do
     conn
     |> put_private(:cas_ticket, ticket)
@@ -186,7 +182,7 @@ defmodule Ueberauth.Strategy.CAS do
 
   defp fetch_user(conn, ticket) do
     ticket
-    |> CAS.API.validate_ticket(conn)
+    |> CAS.API.validate_ticket(validate_url(conn), callback_url(conn))
     |> handle_validate_ticket_response(conn)
   end
 
@@ -205,19 +201,43 @@ defmodule Ueberauth.Strategy.CAS do
     |> put_private(:cas_user, user)
   end
 
-  defp get_attribute(attributes, key) do
-    {_, settings} = Application.get_env(:ueberauth, Ueberauth)[:providers][:cas]
+  defp get_attribute(attribute_mapping, user_attributes, key) do
+    name = Map.get(attribute_mapping, key, Atom.to_string(key))
 
-    name =
-      Keyword.get(settings, :attributes, %{})
-      |> Map.get(key, Atom.to_string(key))
-
-    value = Map.get(attributes, name)
+    value = Map.get(user_attributes, name)
 
     if is_list(value) do
       Enum.at(value, 0)
     else
       value
     end
+  end
+
+  defp redirect_url(conn) do
+    login_url(conn) <> "?service=" <> callback_url(conn)
+  end
+
+  defp validate_url(conn) do
+    base_url(conn) <> validation_path(conn)
+  end
+
+  defp login_url(conn) do
+    base_url(conn) <> "/login"
+  end
+
+  defp base_url(conn) do
+    Keyword.get(settings(conn), :base_url)
+  end
+
+  defp validation_path(conn) do
+    Keyword.get(settings(conn), :validation_path, "/serviceValidate")
+  end
+
+  defp attributes(conn) do
+    Keyword.get(settings(conn), :attributes, %{})
+  end
+
+  defp settings(conn) do
+    Ueberauth.Strategy.Helpers.options(conn) || []
   end
 end
