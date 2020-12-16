@@ -22,12 +22,6 @@ defmodule UeberauthCAS.Mixfile do
     ]
   end
 
-  def application do
-    [
-      applications: [:logger, :ueberauth, :httpoison]
-    ]
-  end
-
   defp deps do
     [
       {:ueberauth, "~> 0.6.3"},
