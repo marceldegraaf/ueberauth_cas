@@ -1,7 +1,7 @@
 defmodule UeberauthCAS.Mixfile do
   use Mix.Project
 
-  @version "2.0.1"
+  @version "2.1.0"
   @url "https://github.com/marceldegraaf/ueberauth_cas"
 
   def project do
@@ -42,7 +42,7 @@ defmodule UeberauthCAS.Mixfile do
   defp package do
     [
       files: ["lib", "mix.exs", "README.md", "LICENSE.md", "CHANGELOG.md"],
-      maintainers: ["Marcel de Graaf"],
+      maintainers: ["Marcel de Graaf", "Niko Strijbol"],
       licenses: ["MIT"],
       links: %{GitHub: @url}
     ]

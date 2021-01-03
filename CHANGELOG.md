@@ -1,5 +1,12 @@
 # Changelog
 
+## Version 2.1.0
+
+- [Feature] Allow configuration of validation path (thanks to [Yann VERY](https://github.com/yannvery))
+- [Feature] Allow dynamic configuration. This allows dynamically injecting CAS strategies, see PR#11. (thanks to [Yann VERY](https://github.com/yannvery))
+- [Fix] Fix when `:sweet_xml` was not in the `applications`. The library now relies on Elixir to automatically populate the `applications`.
+- [Other] Test against Elixir 1.11
+
 ## Version 2.0.1
 
 - [Fix] Propagate network errors to Überauth instead of crashing.
