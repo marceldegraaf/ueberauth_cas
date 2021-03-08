@@ -25,7 +25,13 @@ jobs:
       otp_release: "20.3.8"
 
 env:
-  - MIX_ENV=test
+  global:
+    - MIX_ENV=test
+  jobs: 
+    - BEFORE_INSTALL=""
+    - BEFORE_INSTALL="mix deps.unlock --all"
+
+before_install: $BEFORE_INSTALL
 
 before_script:
   - mix local.rebar --force
