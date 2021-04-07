@@ -2,30 +2,21 @@ dist: bionic
 language: elixir
 
 elixir:
-  - "1.8"
-  - "1.9"
   - "1.10"
   - "1.11"
 
 opt_release:
-  - "20.3.8"
-  - "21.2"
   - "22.3"
   - "23.0"
 
-jobs:
-  exclude:
-    - elixir: "1.8"
-      otp_release: "23.0"
-    - elixir: "1.9"
-      otp_release: "23.0"
-    - elixir: "1.10"
-      otp_release: "20.3.8"
-    - elixir: "1.11"
-      otp_release: "20.3.8"
-
 env:
-  - MIX_ENV=test
+  global:
+    - MIX_ENV=test
+  jobs: 
+    - BEFORE_INSTALL=""
+    - BEFORE_INSTALL="mix deps.unlock --all"
+
+before_install: $BEFORE_INSTALL
 
 before_script:
   - mix local.rebar --force
