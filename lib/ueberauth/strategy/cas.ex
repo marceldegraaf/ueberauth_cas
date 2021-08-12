@@ -1,8 +1,9 @@
 defmodule Ueberauth.Strategy.CAS do
   @moduledoc """
-  CAS Strategy for Überauth. Redirects the user to a CAS login page
-  and verifies the Service Ticket the CAS server returns after a
-  successful login.
+  CAS Strategy for Überauth.
+
+  Redirects the user to a CAS login page and verifies the Service Ticket the
+  CAS server returns after a successful login.
 
   The login flow looks like this:
 
@@ -39,7 +40,7 @@ defmodule Ueberauth.Strategy.CAS do
 
     After a successful login, the strategy validates the ticket and retrieves
     information about the user, as described in the [specification][validate].
-    
+
     The strategy only supports the required params, `service` and `ticket`.
     There is no support for other params.
 

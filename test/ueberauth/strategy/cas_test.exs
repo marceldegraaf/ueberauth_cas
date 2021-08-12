@@ -143,7 +143,7 @@ defmodule Ueberauth.Strategy.CAS.Test do
     assert conn.private.cas_ticket == nil
   end
 
-  test "use user email as uniqe uid", %{conn: conn} do
+  test "use user email as unique uid", %{conn: conn} do
     uid = CAS.uid(conn)
 
     assert uid == "Marcel de Graaf"
