@@ -35,7 +35,7 @@ jobs:
       - run: mix deps.unlock --all --check-unused
         if: ${{ matrix.unlock }}
       - run: mix deps.get
-      - run: mix test --warnings-as-error
+      - run: mix test --warnings-as-errors
 
   lint:
     name: Run lint & format checks
