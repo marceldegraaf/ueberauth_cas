@@ -38,9 +38,9 @@ jobs:
           path: deps
           key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
           restore-keys: ${{ runner.os }}-mix-
-      - run: mix deps.get
       - run: mix deps.unlock --all --check-unused
         if: ${{ matrix.unlock }}
+      - run: mix deps.get
       - run: mix test
 
   lint:
