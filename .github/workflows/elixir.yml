@@ -23,7 +23,7 @@ jobs:
             otp: 24.1
             unlock: true
 
-    name: OTP ${{matrix.otp}} / Elixir ${{matrix.elixir}} (${{matrix.unlock}})
+    name: OTP ${{matrix.otp}} / Elixir ${{matrix.elixir}} / ${{matrix.unlock}}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
