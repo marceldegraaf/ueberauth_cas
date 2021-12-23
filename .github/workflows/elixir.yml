@@ -32,8 +32,8 @@ jobs:
         uses: actions/cache@v2
         with:
           path: deps
-          key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
-          restore-keys: ${{ runner.os }}-mix-
+          key: ${{ runner.os }}-${{matrix.otp}}-${{matrix.elixir}}-${{matrix.unlock}}-mix-${{ hashFiles('**/mix.lock') }}
+          restore-keys: ${{ runner.os }}-${{matrix.otp}}-${{matrix.elixir}}-${{matrix.unlock}}-mix-
       - run: mix deps.unlock --all --check-unused
         if: ${{ matrix.unlock }}
       - run: mix deps.get
