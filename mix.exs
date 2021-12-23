@@ -23,7 +23,7 @@ defmodule UeberauthCAS.Mixfile do
     [
       {:ueberauth, "~> 0.6.3"},
       {:httpoison, "~> 1.8.0"},
-      {:sweet_xml, "~> 0.6.6"},
+      {:sweet_xml, "~> 0.7.2"},
       {:excoveralls, "~> 0.14.4", only: :test},
       {:inch_ex, "~> 2.0.0", only: :docs},
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
