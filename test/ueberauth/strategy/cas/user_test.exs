@@ -2,7 +2,7 @@ defmodule Ueberauth.Strategy.CAS.User.Test do
   use ExUnit.Case
 
   alias Ueberauth.Strategy.CAS.User
-  
+
   test "response without custom attributes works" do
     xml = """
     <cas:serviceResponse xmlns:cas="http://www.yale.edu/tp/cas">
@@ -48,7 +48,7 @@ defmodule Ueberauth.Strategy.CAS.User.Test do
              "title" => "Mr.",
              "email" => "jdoe@example.org",
              "affiliation" => ["staff", "faculty"],
-             "numbers" => ["1", "3", "2"] 
+             "numbers" => ["1", "3", "2"]
            }
   end
 end

@@ -35,7 +35,7 @@ defmodule UeberauthCAS.Mixfile do
     [
       extras: [
         "CHANGELOG.md": [],
-        "README.md": [title: "Overview"],
+        "README.md": [title: "Overview"]
       ],
       main: "readme",
       source_url: @source_url,

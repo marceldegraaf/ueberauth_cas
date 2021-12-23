@@ -148,7 +148,7 @@ defmodule Ueberauth.Strategy.CAS.Test do
 
     assert uid == "Marcel de Graaf"
   end
-  
+
   describe "info struct" do
     test "basic struct is generated", %{conn: conn} do
       info = CAS.info(conn)

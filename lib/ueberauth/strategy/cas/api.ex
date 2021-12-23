@@ -16,14 +16,16 @@ defmodule Ueberauth.Strategy.CAS.API do
 
   defp handle_validate_ticket_response({:ok, %HTTPoison.Response{status_code: 200, body: body}}) do
     # We catch XML parse errors, but they will still be shown in the logs.
+    # Therefore, we must first parse quietly and then use xpath.
     # See https://github.com/kbrw/sweet_xml/issues/48
     try do
-      case xpath(body, ~x"//cas:serviceResponse/cas:authenticationSuccess") do
+      case xpath(parse(body, quiet: true), ~x"//cas:serviceResponse/cas:authenticationSuccess") do
         nil -> {:error, error_from_body(body)}
         _ -> {:ok, CAS.User.from_xml(body)}
       end
     catch
-      :exit, {_type, reason} -> {:error, {"malformed_xml", "Malformed XML response: #{inspect(reason)}"}}
+      :exit, {_type, reason} ->
+        {:error, {"malformed_xml", "Malformed XML response: #{inspect(reason)}"}}
     end
   end
 

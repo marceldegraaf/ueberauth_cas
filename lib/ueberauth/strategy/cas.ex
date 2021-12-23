@@ -104,16 +104,14 @@ defmodule Ueberauth.Strategy.CAS do
   end
 
   @doc """
-  Ueberauth after login callback with a valid CAS Service Ticket.
+  Handle the callback after the CAS Service Ticket has been received or not.
+  The ticket is either present, or missing.
   """
   def handle_callback!(%Plug.Conn{params: %{"ticket" => ticket}} = conn) do
     conn
     |> handle_ticket(ticket)
   end
 
-  @doc """
-  Ueberauth after login callback missing a CAS Service Ticket.
-  """
   def handle_callback!(conn) do
     conn
     |> set_errors!([error("missing_ticket", "No service ticket received")])
