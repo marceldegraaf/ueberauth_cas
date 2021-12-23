@@ -24,7 +24,8 @@ defmodule Ueberauth.Strategy.CAS.API do
         _ -> {:ok, CAS.User.from_xml(body)}
       end
     catch
-      :exit, {_type, reason} -> {:error, {"malformed_xml", "Malformed XML response: #{inspect(reason)}"}}
+      :exit, {_type, reason} ->
+        {:error, {"malformed_xml", "Malformed XML response: #{inspect(reason)}"}}
     end
   end
 
