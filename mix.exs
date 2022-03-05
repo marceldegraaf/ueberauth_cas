@@ -21,7 +21,7 @@ defmodule UeberauthCAS.Mixfile do
 
   defp deps do
     [
-      {:ueberauth, "~> 0.6.3"},
+      {:ueberauth, "~> 0.7.0"},
       {:httpoison, "~> 1.8.0"},
       {:sweet_xml, "~> 0.7.2"},
       {:excoveralls, "~> 0.14.4", only: :test},
