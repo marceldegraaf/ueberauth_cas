@@ -92,7 +92,9 @@ defmodule Ueberauth.Strategy.CAS do
   [validate]: https://apereo.github.io/cas/6.2.x/protocol/CAS-Protocol-Specification.html#25-servicevalidate-cas-20
   """
 
-  use Ueberauth.Strategy
+  use Ueberauth.Strategy,
+    # Seems to be an OAuth thing, which CAS doesn't do
+    ignores_csrf_attack: true
 
   alias Ueberauth.Auth.Info
   alias Ueberauth.Auth.Credentials
