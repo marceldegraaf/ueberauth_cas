@@ -8,7 +8,7 @@ defmodule UeberauthCAS.Mixfile do
     [
       app: :ueberauth_cas,
       version: @version,
-      elixir: "~> 1.8",
+      elixir: "~> 1.9",
       name: "Ueberauth CAS",
       package: package(),
       build_embedded: Mix.env() == :prod,
