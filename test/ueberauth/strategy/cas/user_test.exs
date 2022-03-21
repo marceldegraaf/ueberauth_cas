@@ -51,4 +51,36 @@ defmodule Ueberauth.Strategy.CAS.User.Test do
              "numbers" => ["1", "3", "2"]
            }
   end
+
+  test "attribute names are not modified when :sanitize_attribute_names option is false" do
+    response = """
+    <cas:serviceResponse xmlns:cas="http://www.yale.edu/tp/cas">
+      <cas:authenticationSuccess>
+        <cas:user>janedoe</cas:user>
+        <cas:attributes>
+          <cas:firstName>Jane</cas:firstName>
+          <cas:last_name>Doe</cas:last_name>
+          <cas:mail>jane.doe@mail.test</cas:mail>
+          <cas:OtherMail>jane.doe@other.test</cas:OtherMail>
+          <cas:Affiliation>staff</cas:Affiliation>
+          <cas:Affiliation>faculty</cas:Affiliation>
+          <cas:OTHER_ATTRIBUTE>123</cas:OTHER_ATTRIBUTE>
+        </cas:attributes>
+      </cas:authenticationSuccess>
+    </cas:serviceResponse>
+    """
+
+    user = User.from_xml(response, sanitize_attribute_names: false)
+
+    assert user.name == "janedoe"
+
+    assert user.attributes == %{
+             "firstName" => "Jane",
+             "last_name" => "Doe",
+             "mail" => "jane.doe@mail.test",
+             "OtherMail" => "jane.doe@other.test",
+             "Affiliation" => ["staff", "faculty"],
+             "OTHER_ATTRIBUTE" => "123"
+           }
+  end
 end

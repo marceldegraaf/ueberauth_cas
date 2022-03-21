@@ -37,6 +37,8 @@ defmodule Ueberauth.Strategy.CAS.Test do
           <cas:authenticationDate>2016-06-29T21:53:41Z</cas:authenticationDate>
           <cas:longTermAuthenticationRequestTokenUsed>false</cas:longTermAuthenticationRequestTokenUsed>
           <cas:isFromNewLogin>true</cas:isFromNewLogin>
+          <cas:firstName>Marcel</cas:firstName>
+          <cas:lastName>de Graaf</cas:lastName>
           <cas:roles>developer</cas:roles>
           <cas:roles>admin</cas:roles>
         </cas:attributes>
@@ -96,6 +98,35 @@ defmodule Ueberauth.Strategy.CAS.Test do
       assert conn.private.cas_ticket == "ST-XXXXX"
       assert conn.private.cas_user.name == "mail@marceldegraaf.net"
       refute conn.private.cas_user.attributes["isFromNewLogin"]
+    end
+  end
+
+  test "successful login callback validates the ticket with custom options", %{
+    ok_xml: xml,
+    ueberauth_request_options: ueberauth_request_options
+  } do
+    ueberauth_request_options =
+      update_in(
+        ueberauth_request_options.options,
+        &Keyword.put(&1, :sanitize_attribute_names, false)
+      )
+
+    with_mock HTTPoison,
+      get: fn _url, _opts, _params ->
+        {:ok, %HTTPoison.Response{status_code: 200, body: xml, headers: []}}
+      end do
+      conn =
+        %Plug.Conn{params: %{"ticket" => "ST-XXXXX"}}
+        |> Plug.Conn.put_private(:ueberauth_request_options, ueberauth_request_options)
+        |> CAS.handle_callback!()
+
+      assert conn.private.cas_ticket == "ST-XXXXX"
+      assert conn.private.cas_user.name == "mail@marceldegraaf.net"
+
+      assert %{
+               "firstName" => "Marcel",
+               "lastName" => "de Graaf"
+             } = conn.private.cas_user.attributes
     end
   end
 

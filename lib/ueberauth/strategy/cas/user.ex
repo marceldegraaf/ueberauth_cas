@@ -56,8 +56,8 @@ defmodule Ueberauth.Strategy.CAS.User do
 
   import SweetXml
 
-  def from_xml(body) do
-    attributes = get_attributes(body)
+  def from_xml(body, opts \\ []) do
+    attributes = get_attributes(body, opts)
     name = get_user(body)
 
     %User{}
@@ -69,11 +69,11 @@ defmodule Ueberauth.Strategy.CAS.User do
     xpath(body, ~x"//cas:user/text()") |> to_string()
   end
 
-  defp get_attributes(body) do
+  defp get_attributes(body, opts) do
     body
     |> xpath(~x"//cas:attributes/*"l)
     |> Enum.reduce(%{}, fn node, attributes ->
-      name = get_attribute_name(node)
+      name = get_attribute_name(node, opts)
       value = get_attribute_value(node)
       # If the attribute exists already, convert to list.
       if Map.has_key?(attributes, name) do
@@ -96,10 +96,18 @@ defmodule Ueberauth.Strategy.CAS.User do
     |> cast_value
   end
 
-  defp get_attribute_name(node) do
+  defp get_attribute_name(node, opts) do
     node
     |> xpath(~x"local-name(.)"s)
-    |> Macro.underscore()
+    |> sanitize_attribute_name(opts)
+  end
+
+  defp sanitize_attribute_name(name, opts) do
+    if Keyword.get(opts, :sanitize_attribute_names, true) do
+      Macro.underscore(name)
+    else
+      name
+    end
   end
 
   defp cast_value(value) do
