@@ -14,7 +14,10 @@ defmodule Ueberauth.Strategy.CAS.API do
     |> handle_validate_ticket_response(opts)
   end
 
-  defp handle_validate_ticket_response({:ok, %HTTPoison.Response{status_code: 200, body: body}}, opts) do
+  defp handle_validate_ticket_response(
+         {:ok, %HTTPoison.Response{status_code: 200, body: body}},
+         opts
+       ) do
     # We catch XML parse errors, but they will still be shown in the logs.
     # Therefore, we must first parse quietly and then use xpath.
     # See https://github.com/kbrw/sweet_xml/issues/48
