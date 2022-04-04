@@ -17,8 +17,8 @@ Central Authentication Service (CAS) strategy for Überauth.
    ```elixir
    def deps do
      [
-       {:ueberauth, "~> 0.2"},
-       {:ueberauth_cas, "~> 2.0.0"}
+       {:ueberauth, "~> 0.7"},
+       {:ueberauth_cas, "~> 2.0"}
      ]
    end
    ```
