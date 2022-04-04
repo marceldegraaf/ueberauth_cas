@@ -69,6 +69,9 @@ defmodule Ueberauth.Strategy.CAS do
   By default, attributes are the same as the Überauth field.
   For example, the field `:last_name` will be set from an attribute `cas:lastName`.
 
+  This can be disabled by explicitely setting the `:sanitize_attribute_names`
+   option to `false`.
+
   ### Configuring Überauth mapping
 
   The mapping can be specified in the configuration:
@@ -181,7 +184,7 @@ defmodule Ueberauth.Strategy.CAS do
 
   defp fetch_user(conn, ticket) do
     ticket
-    |> CAS.API.validate_ticket(validate_url(conn), callback_url(conn))
+    |> CAS.API.validate_ticket(validate_url(conn), callback_url(conn), settings(conn))
     |> handle_validate_ticket_response(conn)
   end
 

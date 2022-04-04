@@ -35,6 +35,38 @@ defmodule Ueberauth.Strategy.CAS.API.Test do
     end
   end
 
+  test "passes options to CAS.User.from_xml/2" do
+    ok_xml = """
+    <cas:serviceResponse xmlns:cas="http://www.yale.edu/tp/cas">
+      <cas:authenticationSuccess>
+        <cas:user>janedoe</cas:user>
+        <cas:attributes>
+          <cas:givenName>Jane</cas:givenName>
+          <cas:familyName>Doe</cas:familyName>
+        </cas:attributes>
+      </cas:authenticationSuccess>
+    </cas:serviceResponse>
+    """
+
+    with_mock HTTPoison,
+      get: fn _url, _opts, _params ->
+        {:ok, %HTTPoison.Response{status_code: 200, body: ok_xml, headers: []}}
+      end do
+      {:ok, %Ueberauth.Strategy.CAS.User{} = cas_user} =
+        API.validate_ticket("ST-XXXXX", "http://cas.example.com/serviceValidate", "service_name",
+          sanitize_attribute_names: false
+        )
+
+      assert %Ueberauth.Strategy.CAS.User{
+               name: "janedoe",
+               attributes: %{
+                 "givenName" => "Jane",
+                 "familyName" => "Doe"
+               }
+             } = cas_user
+    end
+  end
+
   test "validates an invalid ticket response" do
     error_xml = """
     <cas:serviceResponse xmlns:cas="http://www.yale.edu/tp/cas">
