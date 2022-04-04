@@ -1,5 +1,12 @@
 # Changelog
 
+## Version 2.2.0
+
+- [Feature] Allow skipping attribute sanitization (PR#30, thanks to [sebn](https://github.com/sebn))
+- [Fix] Compatability with Überauth 0.7
+- [Other] Use GA as CI tool
+- [Other] Test against Elixir 1.13
+
 ## Version 2.1.0
 
 - [Feature] Allow configuration of validation path (thanks to [Yann VERY](https://github.com/yannvery))
