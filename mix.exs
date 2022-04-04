@@ -21,13 +21,13 @@ defmodule UeberauthCAS.Mixfile do
 
   defp deps do
     [
-      {:ueberauth, "~> 0.7.0"},
-      {:httpoison, "~> 1.8.0"},
-      {:sweet_xml, "~> 0.7.2"},
-      {:excoveralls, "~> 0.14.4", only: :test},
-      {:inch_ex, "~> 2.0.0", only: :docs},
+      {:ueberauth, "~> 0.6"},
+      {:httpoison, "~> 1.8"},
+      {:sweet_xml, "~> 0.7"},
+      {:excoveralls, "~> 0.14", only: :test},
+      {:inch_ex, "~> 2.0", only: :docs},
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
-      {:mock, "~> 0.3.5", only: :test}
+      {:mock, "~> 0.3", only: :test}
     ]
   end
 
