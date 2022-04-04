@@ -20,6 +20,17 @@ defmodule UeberauthCAS.Mixfile do
   end
 
   defp deps do
+    # Needed for compatibility with old elixir versions :|
+    mime_dependency =
+      if Mix.env() == :test || Mix.env() == :test_no_nif do
+        case Version.compare(System.version(), "1.10.0") do
+          :lt -> [{:mime, "~> 1.0"}]
+          _ -> []
+        end
+      else
+        []
+      end
+
     [
       {:ueberauth, "~> 0.6"},
       {:httpoison, "~> 1.8"},
@@ -28,7 +39,7 @@ defmodule UeberauthCAS.Mixfile do
       {:inch_ex, "~> 2.0", only: :docs},
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
       {:mock, "~> 0.3", only: :test}
-    ]
+    ] ++ mime_dependency
   end
 
   defp docs do

@@ -22,6 +22,8 @@ jobs:
 
     name: OTP ${{matrix.otp}} / Elixir ${{matrix.elixir}} / ${{matrix.unlock}}
     runs-on: ubuntu-latest
+    env:
+      MIX_ENV: test
     steps:
       - uses: actions/checkout@v3
       - name: Set up Elixir
@@ -29,15 +31,9 @@ jobs:
         with:
           elixir-version: ${{matrix.elixir}}
           otp-version: ${{matrix.otp}}
-      - name: Restore dependencies cache
-        uses: actions/cache@v3.0.1
-        with:
-          path: deps
-          key: ${{ runner.os }}-${{matrix.otp}}-${{matrix.elixir}}-${{matrix.unlock}}-mix-${{ hashFiles('**/mix.lock') }}
-          restore-keys: ${{ runner.os }}-${{matrix.otp}}-${{matrix.elixir}}-${{matrix.unlock}}-mix-
       - run: mix deps.unlock --all --check-unused
         if: ${{ matrix.unlock }}
-      - run: mix deps.get
+      - run: mix deps.get --only test
       - run: mix compile --warnings-as-errors
       - run: mix test ${{ matrix.test-options }}
 
