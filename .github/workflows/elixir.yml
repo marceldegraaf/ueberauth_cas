@@ -11,6 +11,7 @@ jobs:
         include:
           - elixir: 1.9.4
             otp: 22
+            unlock: true
           - elixir: 1.13.3
             otp: 24.2
             test-options: "--warnings-as-errors"
