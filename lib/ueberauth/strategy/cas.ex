@@ -213,7 +213,7 @@ defmodule Ueberauth.Strategy.CAS do
     if is_list(value) do
       case multivalued_attributes_management do
         :first -> Enum.at(value, 0)
-        :last -> Enum.last(value)
+        :last -> List.last(value)
         :list -> value
       end
     else
