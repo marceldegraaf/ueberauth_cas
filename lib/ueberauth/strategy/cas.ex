@@ -153,16 +153,17 @@ defmodule Ueberauth.Strategy.CAS do
     user = conn.private.cas_user
     user_attributes = user.attributes
     attribute_mapping = attributes(conn)
+    multivalued_attributes_management = multivalued_attributes(conn)
 
     %Info{
       name: user.name,
-      email: get_attribute(attribute_mapping, user_attributes, :email),
-      birthday: get_attribute(attribute_mapping, user_attributes, :birthday),
-      description: get_attribute(attribute_mapping, user_attributes, :description),
-      first_name: get_attribute(attribute_mapping, user_attributes, :first_name),
-      last_name: get_attribute(attribute_mapping, user_attributes, :last_name),
-      nickname: get_attribute(attribute_mapping, user_attributes, :nickname),
-      phone: get_attribute(attribute_mapping, user_attributes, :phone)
+      email: get_attribute(attribute_mapping, user_attributes, multivalued_attributes_management, :email),
+      birthday: get_attribute(attribute_mapping, user_attributes, multivalued_attributes_management, :birthday),
+      description: get_attribute(attribute_mapping, user_attributes, multivalued_attributes_management, :description),
+      first_name: get_attribute(attribute_mapping, user_attributes, multivalued_attributes_management, :first_name),
+      last_name: get_attribute(attribute_mapping, user_attributes, multivalued_attributes_management, :last_name),
+      nickname: get_attribute(attribute_mapping, user_attributes, multivalued_attributes_management, :nickname),
+      phone: get_attribute(attribute_mapping, user_attributes, multivalued_attributes_management, :phone)
     }
   end
 
@@ -205,13 +206,16 @@ defmodule Ueberauth.Strategy.CAS do
     |> put_private(:cas_user, user)
   end
 
-  defp get_attribute(attribute_mapping, user_attributes, key) do
+  defp get_attribute(attribute_mapping, user_attributes, multivalued_attributes_management, key) do
     name = Map.get(attribute_mapping, key, Atom.to_string(key))
-
     value = Map.get(user_attributes, name)
 
     if is_list(value) do
-      Enum.at(value, 0)
+      case multivalued_attributes_management do
+        :first -> Enum.at(value, 0)
+        :last -> Enum.last(value)
+        :list -> value
+      end
     else
       value
     end
@@ -239,6 +243,10 @@ defmodule Ueberauth.Strategy.CAS do
 
   defp attributes(conn) do
     Keyword.get(settings(conn), :attributes, %{})
+  end
+
+  defp multivalued_attributes(conn) do
+    Keyword.get(settings(conn), :multivalued_attributes, :first)
   end
 
   defp settings(conn) do
