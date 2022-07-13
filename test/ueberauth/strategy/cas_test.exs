@@ -195,6 +195,19 @@ defmodule Ueberauth.Strategy.CAS.Test do
       assert info.first_name == "Joe"
     end
 
+    test "multiple info works when multivalued_attributes is set to :first", %{conn: conn} do
+      conn =
+        update_in(
+          conn.private.ueberauth_request_options.options,
+          &Keyword.put(&1, :multivalued_attributes, :first)
+        )
+
+      info = CAS.info(conn)
+
+      assert info.name == "Marcel de Graaf"
+      assert info.first_name == "Joe"
+    end
+
     test "multiple info works when multivalued_attributes is set to :last", %{conn: conn} do
       conn =
         update_in(
