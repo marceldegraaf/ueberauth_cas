@@ -162,13 +162,55 @@ defmodule Ueberauth.Strategy.CAS do
 
     %Info{
       name: user.name,
-      email: get_attribute(attribute_mapping, user_attributes, multivalued_attributes_management, :email),
-      birthday: get_attribute(attribute_mapping, user_attributes, multivalued_attributes_management, :birthday),
-      description: get_attribute(attribute_mapping, user_attributes, multivalued_attributes_management, :description),
-      first_name: get_attribute(attribute_mapping, user_attributes, multivalued_attributes_management, :first_name),
-      last_name: get_attribute(attribute_mapping, user_attributes, multivalued_attributes_management, :last_name),
-      nickname: get_attribute(attribute_mapping, user_attributes, multivalued_attributes_management, :nickname),
-      phone: get_attribute(attribute_mapping, user_attributes, multivalued_attributes_management, :phone)
+      email:
+        get_attribute(
+          attribute_mapping,
+          user_attributes,
+          multivalued_attributes_management,
+          :email
+        ),
+      birthday:
+        get_attribute(
+          attribute_mapping,
+          user_attributes,
+          multivalued_attributes_management,
+          :birthday
+        ),
+      description:
+        get_attribute(
+          attribute_mapping,
+          user_attributes,
+          multivalued_attributes_management,
+          :description
+        ),
+      first_name:
+        get_attribute(
+          attribute_mapping,
+          user_attributes,
+          multivalued_attributes_management,
+          :first_name
+        ),
+      last_name:
+        get_attribute(
+          attribute_mapping,
+          user_attributes,
+          multivalued_attributes_management,
+          :last_name
+        ),
+      nickname:
+        get_attribute(
+          attribute_mapping,
+          user_attributes,
+          multivalued_attributes_management,
+          :nickname
+        ),
+      phone:
+        get_attribute(
+          attribute_mapping,
+          user_attributes,
+          multivalued_attributes_management,
+          :phone
+        )
     }
   end
 
