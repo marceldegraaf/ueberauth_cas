@@ -88,6 +88,11 @@ defmodule Ueberauth.Strategy.CAS do
      ]}]
   ```
 
+  ### Multivalued attributes management
+  By default, only the first value is kept in case of multivalued attributes.
+  This behaviour can be managed with the `mutivalued_attributes` option,
+   which can be set to `:first`, `:last` or `:list`.
+
   [login]: https://apereo.github.io/cas/6.2.x/protocol/CAS-Protocol-Specification.html#21-login-as-credential-requestor
   [validate]: https://apereo.github.io/cas/6.2.x/protocol/CAS-Protocol-Specification.html#25-servicevalidate-cas-20
   """
