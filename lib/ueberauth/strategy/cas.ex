@@ -88,13 +88,18 @@ defmodule Ueberauth.Strategy.CAS do
      ]}]
   ```
 
+  ### Multivalued attributes management
+  By default, only the first value is kept in case of multivalued attributes.
+  This behaviour can be managed with the `mutivalued_attributes` option,
+   which can be set to `:first`, `:last` or `:list`.
+
   [login]: https://apereo.github.io/cas/6.2.x/protocol/CAS-Protocol-Specification.html#21-login-as-credential-requestor
   [validate]: https://apereo.github.io/cas/6.2.x/protocol/CAS-Protocol-Specification.html#25-servicevalidate-cas-20
   """
 
   use Ueberauth.Strategy,
-    # Seems to be an OAuth thing, which CAS doesn't do
-    ignores_csrf_attack: true
+      # Seems to be an OAuth thing, which CAS doesn't do
+      ignores_csrf_attack: true
 
   alias Ueberauth.Auth.Info
   alias Ueberauth.Auth.Credentials
@@ -153,16 +158,59 @@ defmodule Ueberauth.Strategy.CAS do
     user = conn.private.cas_user
     user_attributes = user.attributes
     attribute_mapping = attributes(conn)
+    multivalued_attributes_management = multivalued_attributes(conn)
 
     %Info{
       name: user.name,
-      email: get_attribute(attribute_mapping, user_attributes, :email),
-      birthday: get_attribute(attribute_mapping, user_attributes, :birthday),
-      description: get_attribute(attribute_mapping, user_attributes, :description),
-      first_name: get_attribute(attribute_mapping, user_attributes, :first_name),
-      last_name: get_attribute(attribute_mapping, user_attributes, :last_name),
-      nickname: get_attribute(attribute_mapping, user_attributes, :nickname),
-      phone: get_attribute(attribute_mapping, user_attributes, :phone)
+      email:
+        get_attribute(
+          attribute_mapping,
+          user_attributes,
+          multivalued_attributes_management,
+          :email
+        ),
+      birthday:
+        get_attribute(
+          attribute_mapping,
+          user_attributes,
+          multivalued_attributes_management,
+          :birthday
+        ),
+      description:
+        get_attribute(
+          attribute_mapping,
+          user_attributes,
+          multivalued_attributes_management,
+          :description
+        ),
+      first_name:
+        get_attribute(
+          attribute_mapping,
+          user_attributes,
+          multivalued_attributes_management,
+          :first_name
+        ),
+      last_name:
+        get_attribute(
+          attribute_mapping,
+          user_attributes,
+          multivalued_attributes_management,
+          :last_name
+        ),
+      nickname:
+        get_attribute(
+          attribute_mapping,
+          user_attributes,
+          multivalued_attributes_management,
+          :nickname
+        ),
+      phone:
+        get_attribute(
+          attribute_mapping,
+          user_attributes,
+          multivalued_attributes_management,
+          :phone
+        )
     }
   end
 
@@ -205,13 +253,16 @@ defmodule Ueberauth.Strategy.CAS do
     |> put_private(:cas_user, user)
   end
 
-  defp get_attribute(attribute_mapping, user_attributes, key) do
+  defp get_attribute(attribute_mapping, user_attributes, multivalued_attributes_management, key) do
     name = Map.get(attribute_mapping, key, Atom.to_string(key))
-
     value = Map.get(user_attributes, name)
 
     if is_list(value) do
-      Enum.at(value, 0)
+      case multivalued_attributes_management do
+        :first -> Enum.at(value, 0)
+        :last -> List.last(value)
+        :list -> value
+      end
     else
       value
     end
@@ -239,6 +290,10 @@ defmodule Ueberauth.Strategy.CAS do
 
   defp attributes(conn) do
     Keyword.get(settings(conn), :attributes, %{})
+  end
+
+  defp multivalued_attributes(conn) do
+    Keyword.get(settings(conn), :multivalued_attributes, :first)
   end
 
   defp settings(conn) do

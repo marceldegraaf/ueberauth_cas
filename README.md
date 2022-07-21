@@ -39,6 +39,7 @@ Central Authentication Service (CAS) strategy for Überauth.
        base_url: "http://cas.example.com",
        callback_url: "http://your-app.example.com/auth/cas/callback",
        # sanitize_attribute_names: false,
+       # multivalued_attributes: :first,
      ]}]
    ```
 
@@ -72,6 +73,12 @@ implementation. Please let me know if Überauth CAS is incompatible with your CA
 server, and why.
 
 The docs contain more information about protocol specifics.
+
+## Why Jobteaser Forked this repo
+
+We decided to fork this repository to add two functionalities:
+- add an option to specify how mutlivalued attributes should be handled
+- add an option to get the XML payload (TODO)
 
 ## Copyright and License
 

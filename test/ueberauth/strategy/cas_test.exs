@@ -87,9 +87,9 @@ defmodule Ueberauth.Strategy.CAS.Test do
     ueberauth_request_options: ueberauth_request_options
   } do
     with_mock HTTPoison,
-      get: fn _url, _opts, _params ->
-        {:ok, %HTTPoison.Response{status_code: 200, body: xml, headers: []}}
-      end do
+              get: fn _url, _opts, _params ->
+                {:ok, %HTTPoison.Response{status_code: 200, body: xml, headers: []}}
+              end do
       conn =
         %Plug.Conn{params: %{"ticket" => "ST-XXXXX"}}
         |> Plug.Conn.put_private(:ueberauth_request_options, ueberauth_request_options)
@@ -112,9 +112,9 @@ defmodule Ueberauth.Strategy.CAS.Test do
       )
 
     with_mock HTTPoison,
-      get: fn _url, _opts, _params ->
-        {:ok, %HTTPoison.Response{status_code: 200, body: xml, headers: []}}
-      end do
+              get: fn _url, _opts, _params ->
+                {:ok, %HTTPoison.Response{status_code: 200, body: xml, headers: []}}
+              end do
       conn =
         %Plug.Conn{params: %{"ticket" => "ST-XXXXX"}}
         |> Plug.Conn.put_private(:ueberauth_request_options, ueberauth_request_options)
@@ -135,9 +135,9 @@ defmodule Ueberauth.Strategy.CAS.Test do
     ueberauth_request_options: ueberauth_request_options
   } do
     with_mock HTTPoison,
-      get: fn _url, _opts, _params ->
-        {:ok, %HTTPoison.Response{status_code: 200, body: xml, headers: []}}
-      end do
+              get: fn _url, _opts, _params ->
+                {:ok, %HTTPoison.Response{status_code: 200, body: xml, headers: []}}
+              end do
       conn =
         %Plug.Conn{params: %{"ticket" => "ST-XXXXX"}}
         |> Plug.Conn.put_private(:ueberauth_request_options, ueberauth_request_options)
@@ -152,9 +152,9 @@ defmodule Ueberauth.Strategy.CAS.Test do
 
   test "network error propagates", %{ueberauth_request_options: ueberauth_request_options} do
     with_mock HTTPoison,
-      get: fn _url, _opts, _params ->
-        {:error, %HTTPoison.Error{reason: :timeout, id: nil}}
-      end do
+              get: fn _url, _opts, _params ->
+                {:error, %HTTPoison.Error{reason: :timeout, id: nil}}
+              end do
       conn =
         %Plug.Conn{params: %{"ticket" => "ST-XXXXX"}}
         |> Plug.Conn.put_private(:ueberauth_request_options, ueberauth_request_options)
@@ -193,6 +193,45 @@ defmodule Ueberauth.Strategy.CAS.Test do
 
       assert info.name == "Marcel de Graaf"
       assert info.first_name == "Joe"
+    end
+
+    test "multiple info works when multivalued_attributes is set to :first", %{conn: conn} do
+      conn =
+        update_in(
+          conn.private.ueberauth_request_options.options,
+          &Keyword.put(&1, :multivalued_attributes, :first)
+        )
+
+      info = CAS.info(conn)
+
+      assert info.name == "Marcel de Graaf"
+      assert info.first_name == "Joe"
+    end
+
+    test "multiple info works when multivalued_attributes is set to :last", %{conn: conn} do
+      conn =
+        update_in(
+          conn.private.ueberauth_request_options.options,
+          &Keyword.put(&1, :multivalued_attributes, :last)
+        )
+
+      info = CAS.info(conn)
+
+      assert info.name == "Marcel de Graaf"
+      assert info.first_name == "Example"
+    end
+
+    test "multiple info works when multivalued_attributes is set to :list", %{conn: conn} do
+      conn =
+        update_in(
+          conn.private.ueberauth_request_options.options,
+          &Keyword.put(&1, :multivalued_attributes, :list)
+        )
+
+      info = CAS.info(conn)
+
+      assert info.name == "Marcel de Graaf"
+      assert info.first_name == ["Joe", "Example"]
     end
   end
 
