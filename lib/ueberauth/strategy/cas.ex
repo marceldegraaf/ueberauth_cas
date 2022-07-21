@@ -238,6 +238,12 @@ defmodule Ueberauth.Strategy.CAS do
     |> handle_validate_ticket_response(conn)
   end
 
+  defp handle_validate_ticket_response({status, response, body}, conn) do
+    {status, response}
+    |> handle_validate_ticket_response(conn)
+    |> put_private(:cas_xml_payload, body)
+  end
+
   defp handle_validate_ticket_response({:error, {code, message}}, conn) do
     conn
     |> set_errors!([error(code, message)])
