@@ -150,7 +150,7 @@ defmodule Ueberauth.Strategy.CAS do
     }
     raw_info = case conn.private.cas_xml_payload do
       nil -> raw_info
-      xml_payload -> Map.put(raw_payload, :xml_payload, xml_payload)
+      xml_payload -> Map.put(raw_info, :xml_payload, xml_payload)
     end
 
     %Extra{raw_info: raw_info}
