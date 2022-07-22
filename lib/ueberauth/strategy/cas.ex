@@ -134,6 +134,7 @@ defmodule Ueberauth.Strategy.CAS do
     conn
     |> put_private(:cas_ticket, nil)
     |> put_private(:cas_user, nil)
+    |> put_private(:cas_xml_payload, nil)
   end
 
   @doc "Ueberauth UID callback."
@@ -144,11 +145,15 @@ defmodule Ueberauth.Strategy.CAS do
   server returned about the user that authenticated.
   """
   def extra(conn) do
-    %Extra{
-      raw_info: %{
-        user: conn.private.cas_user
-      }
+    raw_info = %{
+      user: conn.private.cas_user
     }
+    raw_info = case conn.private.cas_xml_payload do
+      nil -> raw_info
+      xml_payload -> Map.put(raw_payload, :xml_payload, xml_payload)
+    end
+
+    %Extra{raw_info: raw_info}
   end
 
   @doc """
