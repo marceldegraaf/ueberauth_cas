@@ -15,15 +15,15 @@ defmodule Ueberauth.Strategy.CAS do
   3. CAS server redirects back to the Elixir application, sending
     a Service Ticket in the URL parameters.
 
-  4. This Service Ticket is validated by this Überauth CAS strategy,
+  4. The Service Ticket is validated by this Überauth CAS strategy,
     fetching the user's information at the same time.
 
-  5. User can proceed to use the Elixir application.
+  5. The user can proceed to use the Elixir application.
 
   ## Protocol compliance
 
-  This strategy only supports a subset of the CAS protocol (version 2.0 and 3.0).
-  Notable, there is no support for proxy-related stuff.
+  This strategy only supports a subset of the [CAS protocol][cas]
+  (version 2.0 and 3.0). Notable, there is no support for proxy-related stuff.
 
   More specifically, it supports following CAS URIs:
 
@@ -69,7 +69,7 @@ defmodule Ueberauth.Strategy.CAS do
   By default, attributes are the same as the Überauth field.
   For example, the field `:last_name` will be set from an attribute `cas:lastName`.
 
-  This can be disabled by explicitely setting the `:sanitize_attribute_names`
+  This can be disabled by explicitly setting the `:sanitize_attribute_names`
    option to `false`.
 
   ### Configuring Überauth mapping
@@ -88,13 +88,15 @@ defmodule Ueberauth.Strategy.CAS do
      ]}]
   ```
 
-  ### Multivalued attributes management
+  ### Multivalued attributes
+
   By default, only the first value is kept in case of multivalued attributes.
   This behaviour can be managed with the `mutivalued_attributes` option,
    which can be set to `:first`, `:last` or `:list`.
 
-  [login]: https://apereo.github.io/cas/6.2.x/protocol/CAS-Protocol-Specification.html#21-login-as-credential-requestor
-  [validate]: https://apereo.github.io/cas/6.2.x/protocol/CAS-Protocol-Specification.html#25-servicevalidate-cas-20
+  [login]: https://apereo.github.io/cas/6.5.x/protocol/CAS-Protocol-Specification.html#21-login-as-credential-requestor
+  [validate]: https://apereo.github.io/cas/6.5.x/protocol/CAS-Protocol-Specification.html#25-servicevalidate-cas-20
+  [cas]: https://apereo.github.io/cas/6.5.x/protocol/CAS-Protocol-Specification.html
   """
 
   use Ueberauth.Strategy,
