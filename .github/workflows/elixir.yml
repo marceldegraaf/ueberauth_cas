@@ -9,14 +9,19 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - elixir: 1.9.4
-            otp: 22
-            unlock: true
-          - elixir: 1.13.3
+          - elixir: 1.13.4
             otp: 24.2
             test-options: "--warnings-as-errors"
-          - elixir: 1.13.3
+          - elixir: 1.13.4
             otp: 24.2
+            unlock: true
+            test-options: "--warnings-as-errors"
+          - elixir: 1.14.4
+            otp: 25.3
+            unlock: true
+            test-options: "--warnings-as-errors"
+          - elixir: 1.14.4
+            otp: 25.3
             unlock: true
             test-options: "--warnings-as-errors"
 
@@ -43,10 +48,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Set up Elixir
-        uses: erlef/setup-beam@988e02bfe678367a02564f65ca2e37726dc0268f
+        uses: erlef/setup-beam@v1
         with:
-          elixir-version: '1.12.3' # Define the elixir version [required]
-          otp-version: '24.1' # Define the OTP version [required]
+          elixir-version: '1.14.4' # Define the elixir version [required]
+          otp-version: '25.3' # Define the OTP version [required]
       - name: Restore dependencies cache
         uses: actions/cache@v3.0.5
         with:
