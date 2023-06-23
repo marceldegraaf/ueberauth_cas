@@ -130,10 +130,11 @@ defmodule Ueberauth.Strategy.CAS.Test do
     end
   end
 
-  test "xml_payload can be found in conn with the return_xml_payload option in case of successful login", %{
-    ok_xml: xml,
-    ueberauth_request_options: ueberauth_request_options
-  } do
+  test "xml_payload can be found in conn with the return_xml_payload option in case of successful login",
+       %{
+         ok_xml: xml,
+         ueberauth_request_options: ueberauth_request_options
+       } do
     ueberauth_request_options =
       update_in(
         ueberauth_request_options.options,
@@ -141,9 +142,9 @@ defmodule Ueberauth.Strategy.CAS.Test do
       )
 
     with_mock HTTPoison,
-              get: fn _url, _opts, _params ->
-                {:ok, %HTTPoison.Response{status_code: 200, body: xml, headers: []}}
-              end do
+      get: fn _url, _opts, _params ->
+        {:ok, %HTTPoison.Response{status_code: 200, body: xml, headers: []}}
+      end do
       conn =
         %Plug.Conn{params: %{"ticket" => "ST-XXXXX"}}
         |> Plug.Conn.put_private(:ueberauth_request_options, ueberauth_request_options)
@@ -153,10 +154,11 @@ defmodule Ueberauth.Strategy.CAS.Test do
     end
   end
 
-  test "xml_payload can be found in conn with the return_xml_payload option in case of invalid login", %{
-    error_xml: xml,
-    ueberauth_request_options: ueberauth_request_options
-  } do
+  test "xml_payload can be found in conn with the return_xml_payload option in case of invalid login",
+       %{
+         error_xml: xml,
+         ueberauth_request_options: ueberauth_request_options
+       } do
     ueberauth_request_options =
       update_in(
         ueberauth_request_options.options,
@@ -164,9 +166,9 @@ defmodule Ueberauth.Strategy.CAS.Test do
       )
 
     with_mock HTTPoison,
-              get: fn _url, _opts, _params ->
-                {:ok, %HTTPoison.Response{status_code: 200, body: xml, headers: []}}
-              end do
+      get: fn _url, _opts, _params ->
+        {:ok, %HTTPoison.Response{status_code: 200, body: xml, headers: []}}
+      end do
       conn =
         %Plug.Conn{params: %{"ticket" => "ST-XXXXX"}}
         |> Plug.Conn.put_private(:ueberauth_request_options, ueberauth_request_options)

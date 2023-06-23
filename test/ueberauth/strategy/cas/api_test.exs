@@ -81,9 +81,9 @@ defmodule Ueberauth.Strategy.CAS.API.Test do
     """
 
     with_mock HTTPoison,
-              get: fn _url, _opts, _params ->
-                {:ok, %HTTPoison.Response{status_code: 200, body: ok_xml, headers: []}}
-              end do
+      get: fn _url, _opts, _params ->
+        {:ok, %HTTPoison.Response{status_code: 200, body: ok_xml, headers: []}}
+      end do
       {:ok, %Ueberauth.Strategy.CAS.User{} = _cas_user, xml_body} =
         API.validate_ticket("ST-XXXXX", "http://cas.example.com/serviceValidate", "service_name",
           return_xml_payload: true
@@ -101,9 +101,9 @@ defmodule Ueberauth.Strategy.CAS.API.Test do
     """
 
     with_mock HTTPoison,
-              get: fn _url, _opts, _params ->
-                {:ok, %HTTPoison.Response{status_code: 200, body: error_xml, headers: []}}
-              end do
+      get: fn _url, _opts, _params ->
+        {:ok, %HTTPoison.Response{status_code: 200, body: error_xml, headers: []}}
+      end do
       {:error, {_code, _message}, xml_body} =
         API.validate_ticket("ST-XXXXX", "http://cas.example.com/serviceValidate", "service_name",
           return_xml_payload: true
