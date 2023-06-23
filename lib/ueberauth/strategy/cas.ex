@@ -1,5 +1,5 @@
 defmodule Ueberauth.Strategy.CAS do
-  @moduledoc """
+  @moduledoc ~S"""
   CAS Strategy for Überauth.
 
   Redirects the user to a CAS login page and verifies the Service Ticket the
@@ -64,6 +64,39 @@ defmodule Ueberauth.Strategy.CAS do
   See `Ueberauth.Strategy.CAS.User` for documentation on accessing CAS attributes.
   Some attributes are mapped to Überauth info fields, as described below.
 
+  ### Raw XML payload
+
+  To retrieve the initial XML payload, you must set the option
+  return_xml_payload: true
+  To retrieve it, you can call:
+  ```elixir
+  iex> Cas.extra(conn)
+  %Extra{
+    user: %CAS.User{
+      name: "Marcel de Graaf",
+      attributes: %{
+        "email" => "mail@marceldegraaf.net",
+        "roles" => "developer",
+        "first_name" => "Marcel"
+      }
+    },
+    xml_payload: ~s(
+      <cas:serviceResponse xmlns:cas="http://www.yale.edu/tp/cas">
+      <cas:authenticationSuccess>
+        <cas:user>mail@marceldegraaf.net</cas:user>
+        <cas:attributes>
+          <cas:authenticationDate>2016-06-29T21:53:41Z</cas:authenticationDate>
+          <cas:longTermAuthenticationRequestTokenUsed>false</cas:longTermAuthenticationRequestTokenUsed>
+          <cas:isFromNewLogin>true</cas:isFromNewLogin>
+          <cas:firstName>Marcel</cas:firstName>
+          <cas:lastName>de Graaf</cas:lastName>
+          <cas:roles>developer</cas:roles>
+        </cas:attributes>
+      </cas:authenticationSuccess>
+    </cas:serviceResponse>
+    )
+  }
+
   ### Default mapping
 
   By default, attributes are the same as the Überauth field.
@@ -89,6 +122,7 @@ defmodule Ueberauth.Strategy.CAS do
   ```
 
   ### Multivalued attributes management
+
   By default, only the first value is kept in case of multivalued attributes.
   This behaviour can be managed with the `mutivalued_attributes` option,
    which can be set to `:first`, `:last` or `:list`.
