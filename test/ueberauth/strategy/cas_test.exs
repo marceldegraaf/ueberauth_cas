@@ -130,7 +130,7 @@ defmodule Ueberauth.Strategy.CAS.Test do
     end
   end
 
-  test "xml_payload can be found in conn with the return_xml_payload option in case of successful login",
+  test "xml_payload can be found in conn and CAS.extra/1 with the return_xml_payload option in case of successful login",
        %{
          ok_xml: xml,
          ueberauth_request_options: ueberauth_request_options
@@ -151,10 +151,11 @@ defmodule Ueberauth.Strategy.CAS.Test do
         |> CAS.handle_callback!()
 
       assert conn.private.cas_xml_payload == xml
+      assert CAS.extra(conn).raw_info.xml_payload == xml
     end
   end
 
-  test "xml_payload can be found in conn with the return_xml_payload option in case of invalid login",
+  test "xml_payload can be found in conn and CAS.extra/1 with the return_xml_payload option in case of invalid login",
        %{
          error_xml: xml,
          ueberauth_request_options: ueberauth_request_options
@@ -175,7 +176,15 @@ defmodule Ueberauth.Strategy.CAS.Test do
         |> CAS.handle_callback!()
 
       assert conn.private.cas_xml_payload == xml
+      assert CAS.extra(conn).raw_info.xml_payload == xml
     end
+  end
+
+  test "xml_payload can be found in conn with the return_xml_payload option in case of invalid login",
+       %{conn: conn} do
+    extra = CAS.extra(conn)
+
+    assert extra.raw_info.user == conn.private.cas_user
   end
 
   test "invalid login callback returns an error", %{

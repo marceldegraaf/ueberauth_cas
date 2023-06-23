@@ -72,29 +72,31 @@ defmodule Ueberauth.Strategy.CAS do
   ```elixir
   iex> Cas.extra(conn)
   %Extra{
-    user: %CAS.User{
-      name: "Marcel de Graaf",
-      attributes: %{
-        "email" => "mail@marceldegraaf.net",
-        "roles" => "developer",
-        "first_name" => "Marcel"
-      }
-    },
-    xml_payload: ~s(
-      <cas:serviceResponse xmlns:cas="http://www.yale.edu/tp/cas">
-      <cas:authenticationSuccess>
-        <cas:user>mail@marceldegraaf.net</cas:user>
-        <cas:attributes>
-          <cas:authenticationDate>2016-06-29T21:53:41Z</cas:authenticationDate>
-          <cas:longTermAuthenticationRequestTokenUsed>false</cas:longTermAuthenticationRequestTokenUsed>
-          <cas:isFromNewLogin>true</cas:isFromNewLogin>
-          <cas:firstName>Marcel</cas:firstName>
-          <cas:lastName>de Graaf</cas:lastName>
-          <cas:roles>developer</cas:roles>
-        </cas:attributes>
-      </cas:authenticationSuccess>
-    </cas:serviceResponse>
-    )
+    raw_info: %{
+      user: %CAS.User{
+        name: "Marcel de Graaf",
+        attributes: %{
+          "email" => "mail@marceldegraaf.net",
+          "roles" => "developer",
+          "first_name" => "Marcel"
+        }
+      },
+      xml_payload: ~s(
+        <cas:serviceResponse xmlns:cas="http://www.yale.edu/tp/cas">
+        <cas:authenticationSuccess>
+          <cas:user>mail@marceldegraaf.net</cas:user>
+          <cas:attributes>
+            <cas:authenticationDate>2016-06-29T21:53:41Z</cas:authenticationDate>
+            <cas:longTermAuthenticationRequestTokenUsed>false</cas:longTermAuthenticationRequestTokenUsed>
+            <cas:isFromNewLogin>true</cas:isFromNewLogin>
+            <cas:firstName>Marcel</cas:firstName>
+            <cas:lastName>de Graaf</cas:lastName>
+            <cas:roles>developer</cas:roles>
+          </cas:attributes>
+        </cas:authenticationSuccess>
+      </cas:serviceResponse>
+      )
+    }
   }
 
   ### Default mapping
@@ -179,9 +181,13 @@ defmodule Ueberauth.Strategy.CAS do
   server returned about the user that authenticated.
   """
   def extra(conn) do
-    raw_info = %{
-      user: conn.private.cas_user
-    }
+    raw_info = %{}
+
+    raw_info =
+      case Map.get(conn.private, :cas_user) do
+        nil -> raw_info
+        user -> Map.put(raw_info, :user, user)
+      end
 
     raw_info =
       case Map.get(conn.private, :cas_xml_payload) do
