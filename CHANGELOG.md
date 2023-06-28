@@ -1,5 +1,13 @@
 # Changelog
 
+## Version 2.3.1
+
+- [Fix] Fix broken links in documentation.
+
+## Version 2.3.0
+
+- [Feature] Support multivalued attributes (thanks to [eric-hostalery](https://github.com/eric-hostalery)). Previously, if multiple values existed for the same attribute, only the first was used. Now you can configure it to use the first, last or all. In that case, a list will be used instead.
+
 ## Version 2.2.0
 
 - [Feature] Allow skipping attribute sanitization (PR#30, thanks to [sebn](https://github.com/sebn))

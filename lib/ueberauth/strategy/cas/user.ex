@@ -22,7 +22,7 @@ defmodule Ueberauth.Strategy.CAS.User do
   </cas:serviceResponse>
   ```
 
-  Note that strictly speaking version 2.0 of CAS does not support attributes.
+  Note that strictly speaking, version 2.0 of CAS does not support attributes.
   The strategy however does not make this distinction: if attributes exist, the strategy will
   use them.
 
@@ -38,8 +38,8 @@ defmodule Ueberauth.Strategy.CAS.User do
   end
   ```
 
-  [response]: https://apereo.github.io/cas/6.2.x/protocol/CAS-Protocol-V2-Specification.html#appendix-a-cas-response-xml-schema
-  [old]: https://apereo.github.io/cas/6.2.x/protocol/CAS-Protocol-V2-Specification.html#appendix-a-cas-response-xml-schema
+  [response]: https://apereo.github.io/cas/6.5.x/protocol/CAS-Protocol-Specification.html#appendix-a-cas-response-xml-schema
+  [old]: https://apereo.github.io/cas/6.5.x/protocol/CAS-Protocol-Specification.html#appendix-a-cas-response-xml-schema
   """
 
   @doc """
