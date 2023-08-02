@@ -18,22 +18,31 @@ defmodule Ueberauth.Strategy.CAS.API do
          {:ok, %HTTPoison.Response{status_code: 200, body: body}},
          opts
        ) do
+    body
+    |> attempt_xml_body_parsing(opts)
+    |> add_original_xml(body, opts)
+  end
+
+  defp handle_validate_ticket_response({:error, %HTTPoison.Error{reason: reason}}, _opts) do
+    {:error, reason}
+  end
+
+  defp attempt_xml_body_parsing(body, opts) do
     # We catch XML parse errors, but they will still be shown in the logs.
     # Therefore, we must first parse quietly and then use xpath.
     # See https://github.com/kbrw/sweet_xml/issues/48
     try do
       case xpath(parse(body, quiet: true), ~x"//cas:serviceResponse/cas:authenticationSuccess") do
-        nil -> {:error, error_from_body(body)}
-        _ -> {:ok, CAS.User.from_xml(body, opts)}
+        nil ->
+          {:error, error_from_body(body)}
+
+        _ ->
+          {:ok, CAS.User.from_xml(body, opts)}
       end
     catch
       :exit, {_type, reason} ->
         {:error, {"malformed_xml", "Malformed XML response: #{inspect(reason)}"}}
     end
-  end
-
-  defp handle_validate_ticket_response({:error, %HTTPoison.Error{reason: reason}}, _opts) do
-    {:error, reason}
   end
 
   defp sanitize_string(value) when value == "", do: nil
@@ -51,5 +60,13 @@ defmodule Ueberauth.Strategy.CAS.API do
       |> sanitize_string()
 
     {error_code || "unknown_error", message || "Unknown error"}
+  end
+
+  defp add_original_xml({status, response}, body, opts) do
+    if Keyword.get(opts, :return_xml_payload, false) do
+      {status, response, body}
+    else
+      {status, response}
+    end
   end
 end

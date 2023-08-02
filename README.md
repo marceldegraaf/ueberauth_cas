@@ -40,6 +40,7 @@ Central Authentication Service (CAS) strategy for Überauth.
        callback_url: "http://your-app.example.com/auth/cas/callback",
        # sanitize_attribute_names: false,
        # multivalued_attributes: :first,
+       # return_xml_payload: true
      ]}]
    ```
 

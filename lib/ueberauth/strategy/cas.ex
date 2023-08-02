@@ -1,5 +1,5 @@
 defmodule Ueberauth.Strategy.CAS do
-  @moduledoc """
+  @moduledoc ~S"""
   CAS Strategy for Überauth.
 
   Redirects the user to a CAS login page and verifies the Service Ticket the
@@ -63,6 +63,41 @@ defmodule Ueberauth.Strategy.CAS do
   In the ticket validation step (step 4), user information is retrieved.
   See `Ueberauth.Strategy.CAS.User` for documentation on accessing CAS attributes.
   Some attributes are mapped to Überauth info fields, as described below.
+
+  ### Raw XML payload
+
+  To retrieve the initial XML payload, you must set the option
+  return_xml_payload: true
+  To retrieve it, you can call:
+  ```elixir
+  iex> Cas.extra(conn)
+  %Extra{
+    raw_info: %{
+      user: %CAS.User{
+        name: "Marcel de Graaf",
+        attributes: %{
+          "email" => "mail@marceldegraaf.net",
+          "roles" => "developer",
+          "first_name" => "Marcel"
+        }
+      },
+      xml_payload: ~s(
+        <cas:serviceResponse xmlns:cas="http://www.yale.edu/tp/cas">
+        <cas:authenticationSuccess>
+          <cas:user>mail@marceldegraaf.net</cas:user>
+          <cas:attributes>
+            <cas:authenticationDate>2016-06-29T21:53:41Z</cas:authenticationDate>
+            <cas:longTermAuthenticationRequestTokenUsed>false</cas:longTermAuthenticationRequestTokenUsed>
+            <cas:isFromNewLogin>true</cas:isFromNewLogin>
+            <cas:firstName>Marcel</cas:firstName>
+            <cas:lastName>de Graaf</cas:lastName>
+            <cas:roles>developer</cas:roles>
+          </cas:attributes>
+        </cas:authenticationSuccess>
+      </cas:serviceResponse>
+      )
+    }
+  }
 
   ### Default mapping
 
@@ -140,6 +175,7 @@ defmodule Ueberauth.Strategy.CAS do
     conn
     |> put_private(:cas_ticket, nil)
     |> put_private(:cas_user, nil)
+    |> put_private(:cas_xml_payload, nil)
   end
 
   @doc "Ueberauth UID callback."
@@ -152,11 +188,21 @@ defmodule Ueberauth.Strategy.CAS do
   """
   @impl Ueberauth.Strategy
   def extra(conn) do
-    %Extra{
-      raw_info: %{
-        user: conn.private.cas_user
-      }
-    }
+    raw_info = %{}
+
+    raw_info =
+      case Map.get(conn.private, :cas_user) do
+        nil -> raw_info
+        user -> Map.put(raw_info, :user, user)
+      end
+
+    raw_info =
+      case Map.get(conn.private, :cas_xml_payload) do
+        nil -> raw_info
+        xml_payload -> Map.put(raw_info, :xml_payload, xml_payload)
+      end
+
+    %Extra{raw_info: raw_info}
   end
 
   @doc """
@@ -246,6 +292,12 @@ defmodule Ueberauth.Strategy.CAS do
     ticket
     |> CAS.API.validate_ticket(validate_url(conn), callback_url(conn), settings(conn))
     |> handle_validate_ticket_response(conn)
+  end
+
+  defp handle_validate_ticket_response({status, response, body}, conn) do
+    {status, response}
+    |> handle_validate_ticket_response(conn)
+    |> put_private(:cas_xml_payload, body)
   end
 
   defp handle_validate_ticket_response({:error, {code, message}}, conn) do

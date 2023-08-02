@@ -67,6 +67,52 @@ defmodule Ueberauth.Strategy.CAS.API.Test do
     end
   end
 
+  test "return_xml_payload option works properly for valid ticket response" do
+    ok_xml = """
+    <cas:serviceResponse xmlns:cas="http://www.yale.edu/tp/cas">
+      <cas:authenticationSuccess>
+        <cas:user>janedoe</cas:user>
+        <cas:attributes>
+          <cas:givenName>Jane</cas:givenName>
+          <cas:familyName>Doe</cas:familyName>
+        </cas:attributes>
+      </cas:authenticationSuccess>
+    </cas:serviceResponse>
+    """
+
+    with_mock HTTPoison,
+      get: fn _url, _opts, _params ->
+        {:ok, %HTTPoison.Response{status_code: 200, body: ok_xml, headers: []}}
+      end do
+      {:ok, %Ueberauth.Strategy.CAS.User{} = _cas_user, xml_body} =
+        API.validate_ticket("ST-XXXXX", "http://cas.example.com/serviceValidate", "service_name",
+          return_xml_payload: true
+        )
+
+      assert xml_body == ok_xml
+    end
+  end
+
+  test "return_xml_payload option works properly for invalid ticket response" do
+    error_xml = """
+    <cas:serviceResponse xmlns:cas="http://www.yale.edu/tp/cas">
+      <cas:authenticationFailure code="INVALID_TICKET">Ticket 'ST-XXXXX' already consumed</cas:authenticationFailure>
+    </cas:serviceResponse>
+    """
+
+    with_mock HTTPoison,
+      get: fn _url, _opts, _params ->
+        {:ok, %HTTPoison.Response{status_code: 200, body: error_xml, headers: []}}
+      end do
+      {:error, {_code, _message}, xml_body} =
+        API.validate_ticket("ST-XXXXX", "http://cas.example.com/serviceValidate", "service_name",
+          return_xml_payload: true
+        )
+
+      assert xml_body == error_xml
+    end
+  end
+
   test "validates an invalid ticket response" do
     error_xml = """
     <cas:serviceResponse xmlns:cas="http://www.yale.edu/tp/cas">
