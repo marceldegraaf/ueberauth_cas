@@ -2,7 +2,7 @@ defmodule UeberauthCAS.Mixfile do
   use Mix.Project
 
   @source_url "https://github.com/marceldegraaf/ueberauth_cas"
-  @version "2.3.1"
+  @version "2.4.0"
 
   def project do
     [
