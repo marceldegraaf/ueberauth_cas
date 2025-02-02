@@ -66,8 +66,8 @@ defmodule Ueberauth.Strategy.CAS do
 
   ### Raw XML payload
 
-  To retrieve the initial XML payload, you must set the option
-  return_xml_payload: true
+  To retrieve the initial XML payload, you must set the option `return_xml_payload: true`.
+
   To retrieve it, you can call:
   ```elixir
   iex> Cas.extra(conn)
@@ -98,6 +98,7 @@ defmodule Ueberauth.Strategy.CAS do
       )
     }
   }
+  ```
 
   ### Default mapping
 
