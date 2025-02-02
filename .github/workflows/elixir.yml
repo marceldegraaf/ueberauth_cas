@@ -8,22 +8,25 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - elixir: 1.13.4
-            otp: 24.2
-            test-options: "--warnings-as-errors"
-          - elixir: 1.13.4
-            otp: 24.2
-            unlock: true
-            test-options: "--warnings-as-errors"
-          - elixir: 1.14.4
-            otp: 25.3
-            unlock: true
-            test-options: "--warnings-as-errors"
-          - elixir: 1.14.4
-            otp: 25.3
-            unlock: true
-            test-options: "--warnings-as-errors"
+        unlock: [true, false]
+        elixir: [ "1.13", "1.14", "1.15", "1.16", "1.17", "1.18" ]
+        otp: [ 24, 25, 26, 27 ]
+        exclude:
+          - elixir: "1.13"
+            otp: 26
+          - elixir: "1.13"
+            otp: 27
+          - elixir: "1.14"
+            otp: 27
+          - elixir: "1.15"
+            otp: 27
+          - elixir: "1.16"
+            otp: 27
+          - elixir: "1.17"
+            otp: 24
+          - elixir: "1.18"
+            otp: 24
+
 
     name: OTP ${{matrix.otp}} / Elixir ${{matrix.elixir}} / ${{matrix.unlock}}
     runs-on: ubuntu-latest
@@ -40,7 +43,7 @@ jobs:
         if: ${{ matrix.unlock }}
       - run: mix deps.get --only test
       - run: mix compile --warnings-as-errors
-      - run: mix test ${{ matrix.test-options }}
+      - run: mix test --warnings-as-errors
 
   lint:
     name: Run lint & format checks
@@ -50,8 +53,8 @@ jobs:
       - name: Set up Elixir
         uses: erlef/setup-beam@v1
         with:
-          elixir-version: '1.14.4' # Define the elixir version [required]
-          otp-version: '25.3' # Define the OTP version [required]
+          elixir-version: '1.18'
+          otp-version: '27'
       - name: Restore dependencies cache
         uses: actions/cache@v4.2.0
         with:
