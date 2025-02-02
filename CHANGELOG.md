@@ -4,6 +4,7 @@
 
 - [Feature] Support accessing the raw XML payload (#71, thanks to [eric-hostalery](https://github.com/eric-hostalery)). Enable this with `return_xml_payload`, after which the raw XML payload is available via ` Cas.extra(conn)`.
 - [Other] Test Elixir versions 1.13-1.18.
+- [Fix] Fixes to documentation.
 
 ## Version 2.3.1
 
