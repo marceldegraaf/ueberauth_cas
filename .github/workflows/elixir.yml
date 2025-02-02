@@ -8,7 +8,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        elixir: [ "1.13", "1.14", "1.15", "1.16", "1.17", " 1.18" ]
+        unlock: [true, false]
+        elixir: [ "1.13", "1.14", "1.15", "1.16", "1.17", "1.18" ]
         otp: [ 24, 25, 26, 27 ]
         include:
           - elixir: "1.13"
